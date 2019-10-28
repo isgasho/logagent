@@ -28,9 +28,13 @@ func ReadLogLoop(logpath string){
 }
 
 func WriteLog2Ws() {
+	var i int
 	for{
+		//读取信息
 		msg := <- logMsgs
+		fmt.Println(i)
 		fmt.Println(msg.Msg)
+		i++
 	}
 }
 
@@ -85,7 +89,10 @@ type Tweet struct {
 
 
 func main(){
-	//StartGetLogServer("access.log")
+	StartGetLogServer("/var/log/nginx/access.log")
+
+	fmt.Println("程序跑到这里了")
+	return
 
 	// Starting with elastic.v5, you must pass a context to execute each service
 	ctx := context.Background()
@@ -97,6 +104,7 @@ func main(){
 		return
 	}
 
+	//创建索引
 	exists, err := client.IndexExists("weberr-2019.10.28").Do(ctx)
 	if err != nil{
 		fmt.Println(err)
@@ -113,11 +121,12 @@ func main(){
 		}
 	}
 
+	//set 数据
 	tweet1  := Tweet{User: "olivere", Message: "Take Five", Retweets: 0}
 	put1, err := client.Index().
 		Index("weberr-2019.10.28").
 		Type("tweet").
-		Id("1").
+		//Id("1").
 		BodyJson(tweet1).
 		Do(ctx)
 
@@ -132,7 +141,7 @@ func main(){
 	get1, err := client.Get().
 		Index("weberr-2019.10.28").
 		Type("tweet").
-		Id("1").
+		Id("0").
 		Do(ctx)
 	if err != nil {
 		// Handle error
@@ -143,6 +152,18 @@ func main(){
 		fmt.Printf("Got document %s in version %d from index %s, type %s\n", get1.Id, get1.Version, get1.Index, get1.Type)
 	}
 
-	fmt.Println("执行到这里结束")
+	deleted, err := client.Delete().
+		Index("weberr-2019.10.28").
+		Type("tweet").
+		Id("0").
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+		return
+	}
+
+	fmt.Sprintf("%v",deleted)
+	fmt.Println("删除数据成功,数据跑到这里")
 	return
 }

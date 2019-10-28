@@ -13,14 +13,32 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="467">
-              <caret line="132" column="35" lean-forward="true" selection-start-line="132" selection-start-column="35" selection-end-line="132" selection-end-column="35" />
+            <state relative-caret-position="305">
+              <caret line="94" column="10" selection-start-line="93" selection-start-column="4" selection-end-line="94" selection-end-column="10" />
               <folding>
                 <element signature="e#14#119#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/web/err.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="8" column="51" lean-forward="true" selection-start-line="8" selection-start-column="51" selection-end-line="8" selection-end-column="51" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../../gopkg.in/olivere/elastic.v5/delete.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="440">
+              <caret line="215" column="4" selection-start-line="215" selection-start-column="4" selection-end-line="215" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -29,7 +47,7 @@
         <entry file="file://$PROJECT_DIR$/../../gopkg.in/olivere/elastic.v5/client.go">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="5846">
-              <caret line="1363" column="31" lean-forward="true" selection-start-line="1363" selection-start-column="31" selection-end-line="1363" selection-end-column="31" />
+              <caret line="1363" column="31" selection-start-line="1363" selection-start-column="31" selection-end-line="1363" selection-end-column="31" />
             </state>
           </provider>
         </entry>
@@ -69,6 +87,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/main.go" />
+        <option value="$PROJECT_DIR$/web/err.html" />
       </list>
     </option>
   </component>
@@ -82,7 +101,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="1912" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
@@ -99,6 +118,11 @@
             <path>
               <item name="web-monitor" type="b2602c69:ProjectViewProjectNode" />
               <item name="web-monitor" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="web-monitor" type="b2602c69:ProjectViewProjectNode" />
+              <item name="web-monitor" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -150,7 +174,7 @@
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1098081" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.10181237" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -163,7 +187,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.13474387" />
+      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.033407573" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -214,17 +238,31 @@
     <entry file="file://$PROJECT_DIR$/../../gopkg.in/olivere/elastic.v5/client.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5846">
-          <caret line="1363" column="31" lean-forward="true" selection-start-line="1363" selection-start-column="31" selection-end-line="1363" selection-end-column="31" />
+          <caret line="1363" column="31" selection-start-line="1363" selection-start-column="31" selection-end-line="1363" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../gopkg.in/olivere/elastic.v5/delete.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="215" column="4" selection-start-line="215" selection-start-column="4" selection-end-line="215" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="467">
-          <caret line="132" column="35" lean-forward="true" selection-start-line="132" selection-start-column="35" selection-end-line="132" selection-end-column="35" />
+        <state relative-caret-position="305">
+          <caret line="94" column="10" selection-start-line="93" selection-start-column="4" selection-end-line="94" selection-end-column="10" />
           <folding>
             <element signature="e#14#119#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/err.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="8" column="51" lean-forward="true" selection-start-line="8" selection-start-column="51" selection-end-line="8" selection-end-column="51" />
         </state>
       </provider>
     </entry>
