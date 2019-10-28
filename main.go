@@ -3,10 +3,36 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/hpcloud/tail"
 	"gopkg.in/olivere/elastic.v5"
 	"gopkg.in/olivere/elastic.v5/config"
 	"time"
 )
+
+type WsMsg struct{
+	Msg string `json:msg`
+}
+var logMsgs = make(chan *WsMsg,1000)
+
+func StartGetLogServer(logpath string) {
+	go ReadLogLoop(logpath)
+	WriteLog2Ws()
+}
+
+//TODO channel
+func ReadLogLoop(logpath string){
+	t, _ := tail.TailFile(logpath, tail.Config{Follow: true})
+	for line := range t.Lines {
+		logMsgs <- &WsMsg{Msg:line.Text}
+	}
+}
+
+func WriteLog2Ws() {
+	for{
+		msg := <- logMsgs
+		fmt.Println(msg.Msg)
+	}
+}
 
 // ErrMonitor is a structure used for serializing/deserializing data in Elasticsearch.
 type ErrMonitor struct {
@@ -57,13 +83,17 @@ const mapping = `
 	}
 }`
 
+
 func main(){
+	//StartGetLogServer("access.log")
+
 	ctx := context.Background()
 
-	config := &config.Config{URL:"http://192.168.85.211:9200"}
+	config := &config.Config{URL:"http://localhost:9200"}
 	client, err := elastic.NewClientFromConfig(config)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	exists, err := client.IndexExists("weberr-2019.10.27").Do(ctx)
@@ -94,4 +124,18 @@ func main(){
 	}
 	fmt.Printf("Indexed tweet %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 
+	//Get tweet with specified ID
+	get1, err := client.Get().
+		Index("twitter").
+		Type("tweet").
+		Id("1").
+		Do(ctx)
+	if err != nil {
+		// Handle error
+		panic(err)
+		return
+	}
+	if get1.Found {
+		fmt.Printf("Got document %s in version %d from index %s, type %s\n", get1.Id, get1.Version, get1.Index, get1.Type)
+	}
 }
