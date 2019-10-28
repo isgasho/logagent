@@ -6,13 +6,20 @@ import (
 	"github.com/hpcloud/tail"
 	"gopkg.in/olivere/elastic.v5"
 	"gopkg.in/olivere/elastic.v5/config"
+	"strings"
 	"time"
 )
+
+const (
+	markStr = "log.gif?" //日志标志位置
+	endStr = ` HTTP/1.1" `
+)
+
+var logMsgs = make(chan *WsMsg,1000)
 
 type WsMsg struct{
 	Msg string `json:msg`
 }
-var logMsgs = make(chan *WsMsg,1000)
 
 func StartGetLogServer(logpath string) {
 	go ReadLogLoop(logpath)
@@ -31,10 +38,26 @@ func WriteLog2Ws() {
 	var i int
 	for{
 		//读取信息
-		msg := <- logMsgs
+		l := <- logMsgs
+
+		comma := strings.Index(l.Msg, markStr)
+		if comma == -1{
+			continue
+		}
+		//计数器
 		fmt.Println(i)
-		fmt.Println(msg.Msg)
 		i++
+
+		//这里要改成正则匹配
+		endComma := strings.Index(l.Msg, endStr)
+
+		index := comma + len(markStr)
+		endindex := endComma
+
+		//头尾匹配去除得到数据
+		line := l.Msg[index:endindex]
+
+		fmt.Println(line)
 	}
 }
 
@@ -89,7 +112,8 @@ type Tweet struct {
 
 
 func main(){
-	StartGetLogServer("/var/log/nginx/access.log")
+	//StartGetLogServer("/var/log/nginx/access.log")
+	StartGetLogServer("access.log")
 
 	fmt.Println("程序跑到这里了")
 	return
