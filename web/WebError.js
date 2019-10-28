@@ -10,10 +10,10 @@ function E(){}
 
 	//内置参数列表
 	var options = {
-		url:"",
-		name:"",
-		openId:"",
-		address:""
+		bid:0,
+		soid:0,
+		sid:0,
+		uid:0
 	};
 
 	/**
@@ -96,13 +96,15 @@ function E(){}
 			return false;
 		}
 		var errorMsg = {
+				bid:0,
+			 	soid:0,
+				sid:0,
+				uid:0,
 				module:"",//模块
 				viewUrl:encodeURIComponent(location.href),//URL
-				date:dateFun(),//发生的时间
 				openId:options.openId,//用户的ID
 				name:options.name,//商户的ID
 				address:options.address,//用户所在位置
-				grade:10,//错误等级 1 最低 10 最高
 				platform:window.navigator.platform,//手机型号
 				ua:window.navigator.userAgent.toString(),//UserAgent
 				file:document.currentScript.src,//出错的文件
@@ -113,10 +115,7 @@ function E(){}
 				carset:(document.characterSet ? document.characterSet : document.charset),//浏览器编码环境
 				code:getCodeFun(),//错误代码
 				info:"无错误描述!",//错误信息
-				http:"",//PHP接口名称
-				code:"",//状态码
-				msg:"",//接口解释信息
-				result:""//返回的信息
+				date:dateFun(),//发生的时间
 			};
 
 		for(var i in arg){
@@ -159,7 +158,6 @@ function E(){}
 		if(obj instanceof Error){
 			var stackArr =obj.stack.split(':');
 			params_obj.info = (obj.message || obj.description) +" "+(obj.stack || obj.stacktrace),
-	      	params_obj.grade = 10,
 			params_obj.module = "js";
 			params_obj.line = stackArr[stackArr.length-2];//行数
 			params_obj.col = stackArr[stackArr.length-1];
@@ -181,7 +179,6 @@ function E(){}
 			file:file,
 			line:line,
 			col:column,
-			grade:10,
 			module:"js"
 		};
 		error(params_obj);
