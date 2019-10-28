@@ -1,7 +1,15 @@
 package main
 
-import "hank.com/web-monitor/filelog"
+import (
+	_ "hank.com/web-monitor/elastic"
+	"hank.com/web-monitor/filelog"
+)
 
-func main(){
-	filelog.StartGetLogServer("data/access.log")
+const (
+	//logpath = "/var/log/nginx/access.log"
+	logpath = "data/access.log"
+)
+
+func main() {
+	filelog.StartGetLogServer(logpath)
 }

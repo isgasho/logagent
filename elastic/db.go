@@ -3,10 +3,8 @@ package elastic
 import (
 	"fmt"
 
-	"github.com/astaxie/beego/logs"
-
-	"gopkg.in/olivere/elastic.v5"
-	"gopkg.in/olivere/elastic.v5/config"
+	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/config"
 )
 
 const (
@@ -25,9 +23,9 @@ func init() {
 		err error
 	)
 
-	cfg := &config.Config{}
+	cfg := &config.Config{URL: host}
 	if elasticClient, err = elastic.NewClientFromConfig(cfg); err != nil {
-		logs.Error("Elastic Client Init Err:%v", err)
+		fmt.Sprintf("Elastic Client Init Err:%v", err)
 		panic(err)
 	}
 }

@@ -1,8 +1,10 @@
 package filelog
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"hank.com/web-monitor/elastic"
@@ -11,7 +13,7 @@ import (
 )
 
 const (
-	markStr = "log.gif?" //日志标志位置
+	markStr = "log.gif?data=" //日志标志位置
 	endStr  = ` HTTP/1.1" `
 )
 
@@ -46,6 +48,8 @@ func WriteLog2Ws() {
 			continue
 		}
 
+		fmt.Println(line)
+
 		//计数器
 		i++
 
@@ -56,8 +60,38 @@ func WriteLog2Ws() {
 			return
 		}
 
-		//发送数据
+		ctx := context.Background()
+		//创建elastic索引
+		exists, err := elastic.ElasticClient().IndexExists("weberr-2019.10.28").Do(ctx)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if !exists {
+			createIndex, err := elastic.ElasticClient().CreateIndex("weberr-2019.10.28").Do(ctx)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if createIndex.Acknowledged {
+				//Not acknowledged
+			}
+		}
 
+		//设置数据
+		put1, err := elastic.ElasticClient().Index().
+			Index("weberr-2019.10.28").
+			Type("errmonitor").
+			//Id("1").
+			BodyJson(errMonitor).
+			Do(ctx)
+
+		if err != nil {
+			// Handle error
+			panic(err)
+		}
+
+		fmt.Printf("Indexed errmonitor %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 	}
 }
 
@@ -77,5 +111,9 @@ func SplitLine(msg string) (line string) {
 	//头尾匹配去除得到数据
 	line = msg[index:endindex]
 
+	//url解码一下,nginx默认url编码
+	if line != "" {
+		line, _ = url.QueryUnescape(line)
+	}
 	return
 }
