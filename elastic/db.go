@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	host = "http://127.0.0.1:9200"
+	host = "http://192.168.85.211:9200"
 )
 
 var (

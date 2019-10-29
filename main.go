@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	logpath = "/var/log/nginx/access.log"
+	//logpath = "/var/log/nginx/access.log"
 
-//logpath = "data/access.log"
+	logpath = "data/access.log"
 )
 
 func main() {
