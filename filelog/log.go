@@ -34,22 +34,23 @@ const (
 //大小为8的数组
 var levelPrefix = [LevelDebug + 1]string{"[M] ", "[A] ", "[C] ", "[E] ", "[W] ", "[N] ", "[I] ", "[D] "}
 
-var logMsgs = make(chan *WsMsg, 1000)
+var logMsgs = make(chan *LogMsg, 1)
 
-type WsMsg struct {
+type LogMsg struct {
 	Msg string `json:msg`
 }
 
+//StartGetLogServer- 启动日志服务 读写
 func StartGetLogServer(logpath string) {
 	go ReadLogLoop(logpath)
-	WriteLog2Ws() //TODO 异步
+	go WriteLog2Ws() //TODO 异步
 }
 
-//TODO channel
+//ReadLogLoop- 读取日志  TODO channel
 func ReadLogLoop(logpath string) {
 	t, _ := tail.TailFile(logpath, tail.Config{Follow: true})
 	for line := range t.Lines {
-		logMsgs <- &WsMsg{Msg: line.Text}
+		logMsgs <- &LogMsg{Msg: line.Text}
 	}
 }
 
@@ -66,9 +67,6 @@ func WriteLog2Ws() {
 
 		fmt.Println(line)
 
-		//KibanaDiscover
-		kibanaDiscover := &elastic.KibanaDiscover{Date: time.Now()}
-
 		errMonitor := &elastic.ErrMonitor{}
 		err := json.Unmarshal([]byte(line), errMonitor)
 		if err != nil {
@@ -76,50 +74,17 @@ func WriteLog2Ws() {
 			return
 		}
 
-		//时间处理
-		date := time.Unix(errMonitor.Timestamp, 0)
-		errMonitor.Date = date.Format("2006-01-02 15:04:05")
-
-		kibanaDiscover.FieldsTag = errMonitor.Module
-		kibanaDiscover.Message = FormatErrMonitorMessage(errMonitor)
+		//KibanaDiscover TODO 特殊符号处理
+		kibanaDiscover := elastic.NewKibanaDiscoverByErrMonitor(errMonitor)
 
 		ctx := context.Background()
-		indexName := INDEXNAME + "-" + date.Format("2006-01-02")
-		//创建elastic索引
-		exists, err := elastic.ElasticClient().IndexExists(indexName).Do(ctx)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		if !exists {
-			createIndex, err := elastic.ElasticClient().CreateIndex(indexName).Do(ctx)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			if createIndex.Acknowledged {
-				//Not acknowledged
-			}
-		}
+		indexName := INDEXNAME + "-" + time.Unix(errMonitor.Timestamp, 0).Format("2006-01-02")
 
-		//设置数据
-		put1, err := elastic.ElasticClient().Index().
-			Index(indexName).
-			//Type("errmonitor").
-			//Id("1").
-			BodyJson(kibanaDiscover).
-			Do(ctx)
-
-		if err != nil {
-			// Handle error
-			panic(err)
-		}
-
-		fmt.Printf("Indexed errmonitor %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+		elastic.BuildKibanaDiscover(ctx, indexName, kibanaDiscover)
 	}
 }
 
-//SplitLine-
+//SplitLine- 分解行
 func SplitLine(msg string) (line string) {
 	comma := strings.Index(msg, MARKSTR)
 	if comma == -1 {
@@ -150,6 +115,7 @@ func LogLevelMsg(level int) string {
 	return levelPrefix[level]
 }
 
+//LogFileMsg-文件格式生成
 func LogFileMsg(url string, line, col int64) string {
 	_, file := filepath.Split(url)
 	return fmt.Sprintf("[%v:%v:%v]", file, line, col)
