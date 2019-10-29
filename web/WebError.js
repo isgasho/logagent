@@ -13,7 +13,9 @@ function E(){}
 		bid:0,
 		soid:0,
 		sid:0,
-		uid:0
+		uid:0,
+		url:"",
+		name:""//商户名称
 	};
 
 	/**
@@ -76,15 +78,14 @@ function E(){}
 			return false;
 		}
 		var errorMsg = {
-				bid:0,
-			 	soid:0,
-				sid:0,
-				uid:0,
+				bid:options.bid,
+			 	soid:options.soid,
+				sid:options.sid,
+				uid:options.uid,
 				module:"",//模块
 				viewUrl:encodeURIComponent(location.href),//URL
-				openId:options.openId,//用户的ID
 				name:options.name,//商户的ID
-				address:options.address,//用户所在位置
+				address:"",//用户所在位置
 				platform:window.navigator.platform,//手机型号
 				ua:window.navigator.userAgent.toString(),//UserAgent
 				file:document.currentScript.src,//出错的文件
@@ -104,7 +105,7 @@ function E(){}
 			}
 		}
 
-		//错误信息上报
+		//异步上报错误
 		setTimeout(function(){
 			send({
 				url:options.url,
