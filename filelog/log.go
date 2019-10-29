@@ -67,7 +67,7 @@ func WriteLog2Ws() {
 		fmt.Println(line)
 
 		//KibanaDiscover
-		kibanaDiscover := &elastic.KibanaDiscover{Date: time.Now().Unix(), FieldsTag: "js", Message: "你好"}
+		kibanaDiscover := &elastic.KibanaDiscover{Date: time.Now()}
 
 		errMonitor := &elastic.ErrMonitor{}
 		err := json.Unmarshal([]byte(line), errMonitor)

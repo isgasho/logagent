@@ -1,10 +1,12 @@
 package elastic
 
-//KibanaDiscover-
+import "time"
+
+//KibanaDiscover- 对应Kibana的模板
 type KibanaDiscover struct {
-	Date      int64  `json:"date"`
-	FieldsTag string `json:"fields.tag"`
-	Message   string `json:"message"`
+	Date      time.Time `json:"@timestamp"` //发生的时间
+	FieldsTag string    `json:"fields.tag"`
+	Message   string    `json:"message"`
 }
 
 // ErrMonitor is a structure used for serializing/deserializing data in Elasticsearch.
