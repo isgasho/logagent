@@ -105,7 +105,7 @@ function E(){}
 				carset:(document.characterSet ? document.characterSet : document.charset),//浏览器编码环境
 				code:getCodeFun(),//错误代码
 				info:"无错误描述!",//错误信息
-				date:GetTimestamp(),//发生的时间
+				timestamp:GetTimestamp(),//发生的时间
 			};
 
 		for(var i in arg){

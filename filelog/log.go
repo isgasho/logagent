@@ -62,8 +62,9 @@ func WriteLog2Ws() {
 			return
 		}
 
-		lineTime := time.Unix(errMonitor.Timestamp, 0)
-		indexName := INDEXNAME + "-" + lineTime.Format("2006-01-02")
+		date := time.Unix(errMonitor.Timestamp, 0)
+		errMonitor.Date = date.String()
+		indexName := INDEXNAME + "-" + date.Format("2006-01-02")
 
 		ctx := context.Background()
 		//创建elastic索引
@@ -86,7 +87,7 @@ func WriteLog2Ws() {
 		//设置数据
 		put1, err := elastic.ElasticClient().Index().
 			Index(indexName).
-			Type("errmonitor").
+			//Type("errmonitor").
 			//Id("1").
 			BodyJson(errMonitor).
 			Do(ctx)
