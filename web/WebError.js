@@ -17,29 +17,6 @@ function E(){}
 	};
 
 	/**
-	* @des 将对象转为键值对参数字符串。
-	* @param {Object} obj 参数列表对象
-	* @return 返回拼接之后的参数列表字符串
-	* @private
-	*/
-	function param(obj){
-		if(Object.prototype.toString.call(obj) !== "[object Object]" ){
-	  		return false;
-	  	}
-
-	  	var array = [];
-	  	for(var k in obj){
-	    	if(!Object.prototype.hasOwnProperty.call(obj,k)){
-	    		return false;
-	    	}
-	    	if(obj[k] != ""){
-	    		array.push(k + "=" + encodeURIComponent(obj[k]));
-	    	}
-	  	}
-	  	return array.join("&");
-	}
-
-	/**
 	* @des 处理时间
 	* @return YYYY-MM-DD hh:mm:ss
 	* @private
@@ -59,8 +36,11 @@ function E(){}
 			obj.callback = function(){}
 		}
 
-		var d = param(obj.data),
-	  		url = obj.url + (obj.url.indexOf("?") < 0 ? "?" : "&") + d;
+		//转化json数据
+		var j = JSON.stringify(obj.data)
+		url = obj.url + (obj.url.indexOf("?") < 0 ? "?" : "&") + "data="+j;
+		console.log(url);
+
 	  	// 忽略超长 url 请求，避免资源异常。
 	  	if(url.length > 7713){
 	  		return;
