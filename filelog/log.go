@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -13,11 +14,25 @@ import (
 	"github.com/hpcloud/tail"
 )
 
-var (
+const (
+	LevelEmergency = iota
+	LevelAlert
+	LevelCritical
+	LevelError
+	LevelWarning
+	LevelNotice
+	LevelInformational
+	LevelDebug
+)
+
+const (
 	MARKSTR   = "log.gif?data=" //日志标志位置
 	ENDSTR    = ` HTTP/1.1" `   //日志尾部标记
 	INDEXNAME = "weberr"
 )
+
+//大小为8的数组
+var levelPrefix = [LevelDebug + 1]string{"[M] ", "[A] ", "[C] ", "[E] ", "[W] ", "[N] ", "[I] ", "[D] "}
 
 var logMsgs = make(chan *WsMsg, 1000)
 
@@ -39,7 +54,6 @@ func ReadLogLoop(logpath string) {
 }
 
 func WriteLog2Ws() {
-	var i int
 	for {
 		//读取信息
 		l := <-logMsgs
@@ -52,8 +66,8 @@ func WriteLog2Ws() {
 
 		fmt.Println(line)
 
-		//计数器
-		i++
+		//KibanaDiscover
+		kibanaDiscover := &elastic.KibanaDiscover{Date: time.Now().Unix(), FieldsTag: "js", Message: "你好"}
 
 		errMonitor := &elastic.ErrMonitor{}
 		err := json.Unmarshal([]byte(line), errMonitor)
@@ -62,11 +76,15 @@ func WriteLog2Ws() {
 			return
 		}
 
+		//时间处理
 		date := time.Unix(errMonitor.Timestamp, 0)
-		errMonitor.Date = date.String()
-		indexName := INDEXNAME + "-" + date.Format("2006-01-02")
+		errMonitor.Date = date.Format("2006-01-02 15:04:05")
+
+		kibanaDiscover.FieldsTag = errMonitor.Module
+		kibanaDiscover.Message = FormatErrMonitorMessage(errMonitor)
 
 		ctx := context.Background()
+		indexName := INDEXNAME + "-" + date.Format("2006-01-02")
 		//创建elastic索引
 		exists, err := elastic.ElasticClient().IndexExists(indexName).Do(ctx)
 		if err != nil {
@@ -89,7 +107,7 @@ func WriteLog2Ws() {
 			Index(indexName).
 			//Type("errmonitor").
 			//Id("1").
-			BodyJson(errMonitor).
+			BodyJson(kibanaDiscover).
 			Do(ctx)
 
 		if err != nil {
@@ -108,7 +126,7 @@ func SplitLine(msg string) (line string) {
 		return
 	}
 
-	//这里要改成正则匹配
+	//TODO 这里要改成正则匹配
 	endComma := strings.Index(msg, ENDSTR)
 
 	index := comma + len(MARKSTR)
@@ -122,4 +140,30 @@ func SplitLine(msg string) (line string) {
 		line, _ = url.QueryUnescape(line)
 	}
 	return
+}
+
+//LogLevelMsg- 日志等级输出
+func LogLevelMsg(level int) string {
+	if level < 0 || level > LevelDebug {
+		return ""
+	}
+	return levelPrefix[level]
+}
+
+func LogFileMsg(url string, line, col int64) string {
+	_, file := filepath.Split(url)
+	return fmt.Sprintf("[%v:%v:%v]", file, line, col)
+}
+
+//TODO func输出等级设置
+
+//FormatErrMonitorMessage-转化为Kibana指定格式输出
+func FormatErrMonitorMessage(errMonitor *elastic.ErrMonitor) (message string) {
+	date := errMonitor.Date
+	logLeve := LogLevelMsg(errMonitor.Errlevel)
+	msgByte, _ := json.Marshal(errMonitor)
+	fileMsg := LogFileMsg(errMonitor.ViewUrl, errMonitor.Line, errMonitor.Col)
+
+	message = fmt.Sprintf("%v %v %v %v", date, logLeve, fileMsg, string(msgByte))
+	return message
 }

@@ -103,8 +103,10 @@ function E(){}
 				lang:navigator.language || navigator.browserLanguage || "",//使用的语言
 				screen:window.screen.width+" * "+window.screen.height,//分辨率
 				carset:(document.characterSet ? document.characterSet : document.charset),//浏览器编码环境
+				errlevel:3,
 				code:getCodeFun(),//错误代码
 				info:"无错误描述!",//错误信息
+				stack:"",//堆栈错误
 				timestamp:GetTimestamp(),//发生的时间
 			};
 
@@ -148,7 +150,7 @@ function E(){}
 		if(obj instanceof Error){
 			var stackArr =obj.stack.split(':');
 			params_obj.info = (obj.message || obj.description) +" "+(obj.stack || obj.stacktrace),
-			params_obj.module = "js";
+			params_obj.module = "JS";
 			params_obj.line = stackArr[stackArr.length-2];//行数
 			params_obj.col = stackArr[stackArr.length-1];
 		}else{
@@ -169,7 +171,7 @@ function E(){}
 			file:file,
 			line:line,
 			col:column,
-			module:"js"
+			module:"JS"
 		};
 		error(params_obj);
     	return true;

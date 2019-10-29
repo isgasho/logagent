@@ -1,5 +1,12 @@
 package elastic
 
+//KibanaDiscover-
+type KibanaDiscover struct {
+	Date      int64  `json:"date"`
+	FieldsTag string `json:"fields.tag"`
+	Message   string `json:"message"`
+}
+
 // ErrMonitor is a structure used for serializing/deserializing data in Elasticsearch.
 type ErrMonitor struct {
 	Bid       int64  `json:"bid"`  //集团Bid
@@ -17,8 +24,10 @@ type ErrMonitor struct {
 	Lang      string `json:"lang"`      //使用的语言
 	Screen    string `json:"screen"`    //分辨率
 	Carset    string `json:"carset"`    //浏览器编码环境
+	Errlevel  int    `json:"errlevel"`  //错误等级 3err 4Warning 5Notice 7Debug
 	Code      string `json:"code"`      //错误代码
 	Info      string `json:"info"`      //错误信息
+	Stack     string `json:"stack"`     //堆栈错误
 	Date      string `json:"date"`      //发生的时间
 	Timestamp int64  `json:"timestamp"` //发生的时间戳
 }
