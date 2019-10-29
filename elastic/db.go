@@ -22,8 +22,8 @@ func init() {
 	var (
 		err error
 	)
-
-	cfg := &config.Config{URL: host}
+	sniff := false //因为在内网测试,索引要关闭探寻器，不然会出错
+	cfg := &config.Config{URL: host, Sniff: &sniff}
 	if elasticClient, err = elastic.NewClientFromConfig(cfg); err != nil {
 		fmt.Sprintf("Elastic Client Init Err:%v", err)
 		panic(err)

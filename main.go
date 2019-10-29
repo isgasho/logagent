@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	//logpath = "/var/log/nginx/access.log"
+	//logpath = "/var/log/nginx/access.log"//linux测试路径
+	logpath = "E:/phpstudy_pro/Extensions/Nginx1.15.11/logs/access.log"
 
-	logpath = "data/access.log"
+//logpath = "data/access.log" //本地数据
 )
 
 func main() {

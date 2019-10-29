@@ -6,15 +6,17 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"time"
 
 	"hank.com/web-monitor/elastic"
 
 	"github.com/hpcloud/tail"
 )
 
-const (
-	markStr = "log.gif?data=" //日志标志位置
-	endStr  = ` HTTP/1.1" `
+var (
+	MARKSTR   = "log.gif?data=" //日志标志位置
+	ENDSTR    = ` HTTP/1.1" `   //日志尾部标记
+	INDEXNAME = "weberr"
 )
 
 var logMsgs = make(chan *WsMsg, 1000)
@@ -60,15 +62,18 @@ func WriteLog2Ws() {
 			return
 		}
 
+		lineTime := time.Unix(errMonitor.Timestamp, 0)
+		indexName := INDEXNAME + "-" + lineTime.Format("2006-01-02")
+
 		ctx := context.Background()
 		//创建elastic索引
-		exists, err := elastic.ElasticClient().IndexExists("weberr-2019.10.28").Do(ctx)
+		exists, err := elastic.ElasticClient().IndexExists(indexName).Do(ctx)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		if !exists {
-			createIndex, err := elastic.ElasticClient().CreateIndex("weberr-2019.10.28").Do(ctx)
+			createIndex, err := elastic.ElasticClient().CreateIndex(indexName).Do(ctx)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -80,7 +85,7 @@ func WriteLog2Ws() {
 
 		//设置数据
 		put1, err := elastic.ElasticClient().Index().
-			Index("weberr-2019.10.28").
+			Index(indexName).
 			Type("errmonitor").
 			//Id("1").
 			BodyJson(errMonitor).
@@ -97,15 +102,15 @@ func WriteLog2Ws() {
 
 //SplitLine-
 func SplitLine(msg string) (line string) {
-	comma := strings.Index(msg, markStr)
+	comma := strings.Index(msg, MARKSTR)
 	if comma == -1 {
 		return
 	}
 
 	//这里要改成正则匹配
-	endComma := strings.Index(msg, endStr)
+	endComma := strings.Index(msg, ENDSTR)
 
-	index := comma + len(markStr)
+	index := comma + len(MARKSTR)
 	endindex := endComma
 
 	//头尾匹配去除得到数据

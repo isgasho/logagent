@@ -29,6 +29,15 @@ function E(){}
 	}
 
 	/**
+	 * @des 获取当前时间戳
+	 * @return
+	 * @private
+	 */
+	function GetTimestamp() {
+		return parseInt(new Date().getTime()/1000)
+	}
+
+	/**
 	* @des 创建一个HTTP GET 请求
 	* @param {Object} obj 参数列表对象 {url:'',data:{},callback:function(){}}
 	* @private 
@@ -96,7 +105,7 @@ function E(){}
 				carset:(document.characterSet ? document.characterSet : document.charset),//浏览器编码环境
 				code:getCodeFun(),//错误代码
 				info:"无错误描述!",//错误信息
-				date:dateFun(),//发生的时间
+				date:GetTimestamp(),//发生的时间
 			};
 
 		for(var i in arg){
