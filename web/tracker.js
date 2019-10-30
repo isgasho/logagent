@@ -170,6 +170,9 @@ function E(){}
 
 		//转化json数据
 		var j = JSON.stringify(obj.data)
+		//base64编码
+		//var data = window.btoa(j);
+
 		url = obj.url + (obj.url.indexOf("?") < 0 ? "?" : "&") + "data="+j;
 		console.log(url);
 

@@ -21,3 +21,6 @@
 
 (2)http://www.hank.com/log?gif?data={"aa":"aa","bb":"bb"} <br/>
 解析data参数后直接json解析成对象
+
+
+
