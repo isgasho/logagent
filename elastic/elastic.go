@@ -15,36 +15,6 @@ type KibanaDiscover struct {
 	Message   string    `json:"message"`
 }
 
-//NewKibanaDiscoverByErrMonitor- 根据errMonitor转化KibanaDiscover
-func NewKibanaDiscoverByErrMonitor(errMonitor *ErrMonitor) *KibanaDiscover {
-	kibanaDiscover := &KibanaDiscover{Date: time.Now()}
-	kibanaDiscover.FieldsTag = errMonitor.Module
-	kibanaDiscover.Message = filelog.FormatErrMonitorMessage(errMonitor)
-	return kibanaDiscover
-}
-
-func BuildKibanaDiscover(ctx context.Context, indexName string, kibanaDiscover *KibanaDiscover) {
-
-	//创建elastic索引
-	err := CreateTable(ctx, indexName)
-	if err != nil {
-		panic(err)
-	}
-
-	//设置数据
-	put1, err := ElasticClient().Index().
-		Index(indexName).
-		BodyJson(kibanaDiscover).
-		Do(ctx)
-
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
-
-	fmt.Printf("Indexed errmonitor %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
-}
-
 // ErrMonitor is a structure used for serializing/deserializing data in Elasticsearch.
 type ErrMonitor struct {
 	Bid       int64  `json:"bid"`  //集团Bid
@@ -86,4 +56,35 @@ func CreateTable(ctx context.Context, tableName string) error {
 		}
 	}
 	return nil
+}
+
+//NewKibanaDiscoverByErrMonitor- 根据errMonitor转化KibanaDiscover
+func NewKibanaDiscoverByErrMonitor(errMonitor *ErrMonitor) *KibanaDiscover {
+	kibanaDiscover := &KibanaDiscover{Date: time.Now()}
+	kibanaDiscover.FieldsTag = errMonitor.Module
+	kibanaDiscover.Message = filelog.FormatErrMonitorMessage(errMonitor)
+	return kibanaDiscover
+}
+
+//BuildKibanaDiscover- 创建索引并生成数据
+func BuildKibanaDiscover(ctx context.Context, indexName string, kibanaDiscover *KibanaDiscover) {
+
+	//创建elastic索引
+	err := CreateTable(ctx, indexName)
+	if err != nil {
+		panic(err)
+	}
+
+	//设置数据
+	put1, err := ElasticClient().Index().
+		Index(indexName).
+		BodyJson(kibanaDiscover).
+		Do(ctx)
+
+	if err != nil {
+		// Handle error
+		panic(err)
+	}
+
+	fmt.Printf("Indexed errmonitor %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 }
