@@ -3,9 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5c1896d7-978d-4a72-adce-2a963f379d05" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web-monitor" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/tracker.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/tracker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/elastic/elastic.go" beforeDir="false" afterPath="$PROJECT_DIR$/elastic/elastic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/filelog/log.go" beforeDir="false" afterPath="$PROJECT_DIR$/filelog/log.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,8 +18,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/elastic/elastic.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1477">
-              <caret line="61" column="5" selection-start-line="61" selection-start-column="5" selection-end-line="61" selection-end-column="5" />
+            <state relative-caret-position="243">
+              <caret line="59" column="97" selection-start-line="59" selection-start-column="97" selection-end-line="59" selection-end-column="97" />
+              <folding>
+                <element signature="e#17#45#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -27,26 +30,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/filelog/log.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-759">
-              <caret line="87" column="5" selection-start-line="87" selection-start-column="5" selection-end-line="87" selection-end-column="5" />
+            <state relative-caret-position="229">
+              <caret line="45" column="27" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
+              <folding>
+                <element signature="e#17#170#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web/tracker.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4914">
-              <caret line="182" selection-start-line="182" selection-end-line="182" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="560">
+              <first_editor relative-caret-position="600">
                 <caret line="25" selection-start-line="25" selection-end-line="25" />
               </first_editor>
               <second_editor />
@@ -57,11 +54,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/elastic/db.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
+            <state relative-caret-position="26">
               <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
               <folding>
                 <element signature="e#17#102#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/main.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="162">
+              <caret line="9" column="59" lean-forward="true" selection-start-line="9" selection-start-column="59" selection-end-line="9" selection-end-column="59" />
             </state>
           </provider>
         </entry>
@@ -92,6 +98,8 @@
       <find>indexname</find>
       <find>string</find>
       <find>getCodeFun</find>
+      <find>filelog</find>
+      <find>elastic</find>
     </findStrings>
     <replaceStrings>
       <replace>INDEXNAME</replace>
@@ -108,16 +116,16 @@
         <option value="$PROJECT_DIR$/log/log.go" />
         <option value="$PROJECT_DIR$/datasource/log.go" />
         <option value="$PROJECT_DIR$/file/log.go" />
-        <option value="$PROJECT_DIR$/main.go" />
         <option value="$PROJECT_DIR$/web/err.html" />
         <option value="$PROJECT_DIR$/elastic/db.go" />
-        <option value="$PROJECT_DIR$/elastic/elastic.go" />
-        <option value="$PROJECT_DIR$/filelog/log.go" />
         <option value="$PROJECT_DIR$/web/WebError.js" />
         <option value="$PROJECT_DIR$/web/util.js" />
         <option value="$PROJECT_DIR$/web/index.html" />
         <option value="$PROJECT_DIR$/web/tracker.js" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/elastic/elastic.go" />
+        <option value="$PROJECT_DIR$/filelog/log.go" />
+        <option value="$PROJECT_DIR$/main.go" />
       </list>
     </option>
   </component>
@@ -216,12 +224,12 @@
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.071428575" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.11247335" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.111358576" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.21714923" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.25389755" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.5400891" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -229,7 +237,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.16592428" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32182628" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -485,13 +493,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/log.gif">
       <provider selected="true" editor-type-id="images" />
     </entry>
@@ -505,16 +506,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/elastic/db.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
-          <folding>
-            <element signature="e#17#102#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="486">
@@ -522,34 +513,57 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/web/tracker.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4671">
+          <caret line="182" selection-start-line="182" selection-end-line="182" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/elastic/elastic.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1477">
-          <caret line="61" column="5" selection-start-line="61" selection-start-column="5" selection-end-line="61" selection-end-column="5" />
+        <state relative-caret-position="243">
+          <caret line="59" column="97" selection-start-line="59" selection-start-column="97" selection-end-line="59" selection-end-column="97" />
+          <folding>
+            <element signature="e#17#45#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/filelog/log.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-759">
-          <caret line="87" column="5" selection-start-line="87" selection-start-column="5" selection-end-line="87" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/tracker.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4914">
-          <caret line="182" selection-start-line="182" selection-end-line="182" />
+        <state relative-caret-position="229">
+          <caret line="45" column="27" selection-start-line="45" selection-start-column="27" selection-end-line="45" selection-end-column="27" />
+          <folding>
+            <element signature="e#17#170#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="560">
+          <first_editor relative-caret-position="600">
             <caret line="25" selection-start-line="25" selection-end-line="25" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/elastic/db.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
+          <folding>
+            <element signature="e#17#102#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" column="59" lean-forward="true" selection-start-line="9" selection-start-column="59" selection-end-line="9" selection-end-column="59" />
         </state>
       </provider>
     </entry>

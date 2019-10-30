@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"time"
-
-	"hank.com/web-monitor/filelog"
 )
 
 //KibanaDiscover- 对应Kibana的模板
@@ -56,14 +54,6 @@ func CreateTable(ctx context.Context, tableName string) error {
 		}
 	}
 	return nil
-}
-
-//NewKibanaDiscoverByErrMonitor- 根据errMonitor转化KibanaDiscover
-func NewKibanaDiscoverByErrMonitor(errMonitor *ErrMonitor) *KibanaDiscover {
-	kibanaDiscover := &KibanaDiscover{Date: time.Now()}
-	kibanaDiscover.FieldsTag = errMonitor.Module
-	kibanaDiscover.Message = filelog.FormatErrMonitorMessage(errMonitor)
-	return kibanaDiscover
 }
 
 //BuildKibanaDiscover- 创建索引并生成数据

@@ -43,7 +43,7 @@ type LogMsg struct {
 //StartGetLogServer- 启动日志服务 读写
 func StartGetLogServer(logpath string) {
 	go ReadLogLoop(logpath)
-	go WriteLog2Ws() //TODO 异步
+	WriteLog2Ws() //TODO 异步
 }
 
 //ReadLogLoop- 读取日志  TODO channel
@@ -75,7 +75,7 @@ func WriteLog2Ws() {
 		}
 
 		//KibanaDiscover TODO 特殊符号处理
-		kibanaDiscover := elastic.NewKibanaDiscoverByErrMonitor(errMonitor)
+		kibanaDiscover := NewKibanaDiscoverByErrMonitor(errMonitor)
 
 		ctx := context.Background()
 		indexName := INDEXNAME + "-" + time.Unix(errMonitor.Timestamp, 0).Format("2006-01-02")
@@ -132,4 +132,12 @@ func FormatErrMonitorMessage(errMonitor *elastic.ErrMonitor) (message string) {
 
 	message = fmt.Sprintf("%v %v %v %v", date, logLeve, fileMsg, string(msgByte))
 	return message
+}
+
+//NewKibanaDiscoverByErrMonitor- 根据errMonitor转化KibanaDiscover
+func NewKibanaDiscoverByErrMonitor(errMonitor *elastic.ErrMonitor) *elastic.KibanaDiscover {
+	kibanaDiscover := &elastic.KibanaDiscover{Date: time.Now()}
+	kibanaDiscover.FieldsTag = errMonitor.Module
+	kibanaDiscover.Message = FormatErrMonitorMessage(errMonitor)
+	return kibanaDiscover
 }
