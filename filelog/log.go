@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -26,8 +25,8 @@ const (
 )
 
 const (
-	MARKSTR   = "log.gif?data=" //日志标志位置
-	ENDSTR    = ` HTTP/1.1" `   //日志尾部标记
+	MARKSTR   = "log.gif?log=" //日志标志位置
+	ENDSTR    = ` HTTP/1.1" `  //日志尾部标记
 	INDEXNAME = "weberr"
 )
 
@@ -67,18 +66,18 @@ func WriteLog2Ws() {
 
 		fmt.Println(line)
 
-		errMonitor := &elastic.ErrMonitor{}
-		err := json.Unmarshal([]byte(line), errMonitor)
+		commonLogFormat := &elastic.CommonLogFormat{}
+		err := json.Unmarshal([]byte(line), commonLogFormat)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
 		//KibanaDiscover TODO 特殊符号处理
-		kibanaDiscover := NewKibanaDiscoverByErrMonitor(errMonitor)
+		kibanaDiscover := NewKibanaDiscoverCommonLogFormat(commonLogFormat)
 
 		ctx := context.Background()
-		indexName := INDEXNAME + "-" + time.Unix(errMonitor.Timestamp, 0).Format("2006-01-02")
+		indexName := INDEXNAME + "-" + time.Unix(commonLogFormat.Timestamp, 0).Format("2006-01-02")
 
 		elastic.BuildKibanaDiscover(ctx, indexName, kibanaDiscover)
 	}
@@ -116,28 +115,30 @@ func LogLevelMsg(level int) string {
 }
 
 //LogFileMsg-文件格式生成
-func LogFileMsg(url string, line, col int64) string {
-	_, file := filepath.Split(url)
+func LogFileMsg(file string, line, col int64) string {
 	return fmt.Sprintf("[%v:%v:%v]", file, line, col)
 }
 
 //TODO func输出等级设置
 
 //FormatErrMonitorMessage-转化为Kibana指定格式输出
-func FormatErrMonitorMessage(errMonitor *elastic.ErrMonitor) (message string) {
-	date := errMonitor.Date
-	logLeve := LogLevelMsg(errMonitor.Errlevel)
-	msgByte, _ := json.Marshal(errMonitor)
-	fileMsg := LogFileMsg(errMonitor.ViewUrl, errMonitor.Line, errMonitor.Col)
+func FormatErrMonitorMessage(commonLogFormat *elastic.CommonLogFormat) (message string) {
+	date := commonLogFormat.Date
+	logLeve := LogLevelMsg(commonLogFormat.Errlevel)
+	fileMsg := LogFileMsg(commonLogFormat.File, commonLogFormat.Line, commonLogFormat.Col)
 
-	message = fmt.Sprintf("%v %v %v %v", date, logLeve, fileMsg, string(msgByte))
+	message = fmt.Sprintf("%v %v %v %v", date, logLeve, fileMsg, commonLogFormat.Message)
 	return message
 }
 
-//NewKibanaDiscoverByErrMonitor- 根据errMonitor转化KibanaDiscover
-func NewKibanaDiscoverByErrMonitor(errMonitor *elastic.ErrMonitor) *elastic.KibanaDiscover {
+//NewKibanaDiscoverCommonLogFormat- 根据errMonitor转化KibanaDiscover
+func NewKibanaDiscoverCommonLogFormat(commonLogFormat *elastic.CommonLogFormat) *elastic.KibanaDiscover {
+	//TODO Module必填
+	if commonLogFormat.Module == "" || commonLogFormat.Errlevel == 0 || commonLogFormat.File == "" {
+
+	}
 	kibanaDiscover := &elastic.KibanaDiscover{Date: time.Now()}
-	kibanaDiscover.FieldsTag = errMonitor.Module
-	kibanaDiscover.Message = FormatErrMonitorMessage(errMonitor)
+	kibanaDiscover.FieldsTag = commonLogFormat.Module
+	kibanaDiscover.Message = FormatErrMonitorMessage(commonLogFormat)
 	return kibanaDiscover
 }

@@ -19,7 +19,7 @@
 (1)http://www.hank.com/log.gif?aa="aa"&bb="bb" <br/>
 可以通过url参数解析出参数出来
 
-(2)http://www.hank.com/log?gif?data={"aa":"aa","bb":"bb"} <br/>
+(2)http://www.hank.com/log.gif?log={"aa":"aa","bb":"bb"} <br/>
 解析data参数后直接json解析成对象
 
 

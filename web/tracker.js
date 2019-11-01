@@ -121,25 +121,32 @@ function E(){}
 			soid:options.soid,
 			sid:options.sid,
 			uid:options.uid,
-			module:"",//模块
-			viewUrl:encodeURIComponent(location.href),//URL
 			name:options.name,//商户的ID
-			address:"",//用户所在位置
-			platform:window.navigator.platform,//手机型号
-			ua:window.navigator.userAgent.toString(),//UserAgent
-			file:document.currentScript.src,//出错的文件
-			line:0,//出错文件所在行
-			col:(window.event && window.event.errorCharacter) || 0,//出错文件所在列
-			lang:navigator.language || navigator.browserLanguage || "",//使用的语言
-			screen:window.screen.width+" * "+window.screen.height,//分辨率
-			carset:(document.characterSet ? document.characterSet : document.charset),//浏览器编码环境
-			errlevel:3,
 			code:getCodeFun(),//错误代码
 			info:"无错误描述!",//错误信息
 			stack:"",//堆栈错误
+		};
+
+		let message = JSON.stringify(errorMsg)
+
+		//公共的日志格式
+		var commonLogFormat={
+			module:"",//模块
+			errlevel:3,
+			viewUrl:encodeURIComponent(location.href),//URL
+			file:document.currentScript.src,//出错的文件
+			line:0,//出错文件所在行
+			col:(window.event && window.event.errorCharacter) || 0,//出错文件所在列
+			message:"",
+			address:"",//用户所在位置
+			platform:window.navigator.platform,//手机型号
+			ua:window.navigator.userAgent.toString(),//UserAgent
+			lang:navigator.language || navigator.browserLanguage || "",//使用的语言
+			screen:window.screen.width+" * "+window.screen.height,//分辨率
+			carset:(document.characterSet ? document.characterSet : document.charset),//浏览器编码环境
 			date:date,
 			timestamp:GetTimestamp(date),//发生的时间
-		};
+		}
 
 		for(var i in arg){
 			if(arg[i] != ""){
@@ -152,7 +159,7 @@ function E(){}
 			setTimeout(function(){
 				send({
 					url:options.url,
-					data:errorMsg
+					data:commonLogFormat
 				});
 			},0);
 		}
@@ -173,7 +180,7 @@ function E(){}
 		//base64编码
 		//var data = window.btoa(j);
 
-		url = obj.url + (obj.url.indexOf("?") < 0 ? "?" : "&") + "data="+j;
+		url = obj.url + (obj.url.indexOf("?") < 0 ? "?" : "&") + "log="+j;
 		console.log(url);
 
 		// 忽略超长 url 请求，避免资源异常。
