@@ -1,3 +1,4 @@
 .idea
-*.etcd
+vueweb/node_modules
+vueweb/dist
 vendor/**/*
