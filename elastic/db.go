@@ -2,13 +2,10 @@ package elastic
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
 
 	"github.com/olivere/elastic"
 	"github.com/olivere/elastic/config"
-)
-
-const (
-	host = "http://192.168.85.211:9200"
 )
 
 var (
@@ -22,8 +19,11 @@ func init() {
 	var (
 		err error
 	)
-	sniff := false //因为在内网测试,索引要关闭探寻器，不然会出错
-	cfg := &config.Config{URL: host, Sniff: &sniff}
+
+	elasticSniff,_ := beego.AppConfig.Bool("elastic.sniff") //因为在内网测试,索引要关闭探寻器，不然会出错
+	url :=beego.AppConfig.DefaultString("elastic.url","http://127.0.0.1:9200")
+
+	cfg := &config.Config{URL: url, Sniff: &elasticSniff}
 	if elasticClient, err = elastic.NewClientFromConfig(cfg); err != nil {
 		fmt.Sprintf("Elastic Client Init Err:%v", err)
 		panic(err)
