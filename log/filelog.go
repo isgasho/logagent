@@ -95,5 +95,3 @@ func SplitLine(msg string) (line string) {
 func LogFileMsg(file string, line, col int64) string {
 	return fmt.Sprintf("[%v:%v:%v]", file, line, col)
 }
-
-//TODO func输出等级设置

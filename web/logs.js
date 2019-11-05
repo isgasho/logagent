@@ -1,3 +1,5 @@
+const util = require('./util')
+
 const LogLevel = {
   LevelEmergency: 0,
   LevelAlert: 1,
@@ -114,7 +116,7 @@ var params = {
   viewurl:"",   //请求的url
   enablefiledepthtype:0,
   loglevel:0,  //错误等级 3err 4Warning 5Notice 7Debug
-  filename:"",      //出错的文件
+  filename:,      //出错的文件
   line:0,      //出错文件所在行
   col:0,       //出错文件所在列
   message:"",   //自定义消息
@@ -124,10 +126,16 @@ var params = {
   screen:"",    //分辨率
   carset:"",    //浏览器编码环境
   address:"",      //所在位置
-  date:"",            //发生的时间
+  date:util.dateFun(),            //发生的时间
   timestamp:0, //发生的时间戳
 }
+params.timestamp=util.GetTimestamp(params.date);
 
 var logs= new Logs(params);
 
 module.exports = logs;
+
+logs.Error("大事不好,出错了")
+
+console.log(logs);
+

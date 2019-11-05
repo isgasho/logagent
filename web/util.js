@@ -1,5 +1,4 @@
 
-
 function Util(){}
 
 //获取当前时间
@@ -14,3 +13,5 @@ Util.prototype.GetTimestamp = function(timeDate){
 }
 
 var util = new Util();
+
+module.exports = util;

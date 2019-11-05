@@ -1,5 +1,3 @@
-const util = require("util")
-
 /**
 * @des 错误对象
 * @class 
@@ -156,7 +154,7 @@ function E(){}
 			}
 		}
 
-		console.log(util.dateFun);
+		console.log(util.dateFun());
 		return false;
 
 		//异步上报错误
