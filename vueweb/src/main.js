@@ -3,10 +3,13 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import VueError from '../static/js/vueerrorcatch.js'
+import logs from '../static/js/logs'
+import VueError from '../static/js/errorcatch.js'
 
 Vue.config.productionTip = false
 Vue.use(VueError)
+
+Vue.prototype.logs = logs
 
 /* eslint-disable no-new */
 new Vue({

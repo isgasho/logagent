@@ -23,7 +23,7 @@ type CommonLog struct {
 	Module    string `json:"module"`    //出错的模块 应用的名称例如:xmiss
 	ViewUrl   string `json:"viewUrl"`   //请求的url
 	LogLevel  int    `json:"loglevel"`  //错误等级 3err 4Warning 5Notice 7Debug
-	File      string `json:"file"`      //出错的文件
+	FileName      string `json:"filename"`      //出错的文件
 	Line      int64  `json:"line"`      //出错文件所在行
 	Col       int64  `json:"col"`       //出错文件所在列
 	Message   string `json:"message"`   //自定义消息

@@ -1,8 +1,8 @@
 {
-  "name": "my-project",
+  "name": "vueweb",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "Hank <853160447@qq.com>",
+  "author": "Hank <hank@facego.onaliyun.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",

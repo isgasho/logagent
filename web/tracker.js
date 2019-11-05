@@ -4,6 +4,7 @@
 * @class 
 */
 function E(){}
+
 (function(window,E){
 	if(!E){
 		return false;
@@ -73,7 +74,7 @@ function E(){}
 		if(obj instanceof Error){
 			var stackArr =obj.stack.split(':');
 			params_obj.info = (obj.message || obj.description) +" "+(obj.stack || obj.stacktrace),
-			params_obj.module = "JS";
+			params_obj.module = "webmonitor";
 			params_obj.line = stackArr[stackArr.length-2];//行数
 			params_obj.col = stackArr[stackArr.length-1];
 		}else{
@@ -94,7 +95,7 @@ function E(){}
 			file:file,
 			line:line,
 			col:column,
-			module:"JS"
+			module:"webmonitor"
 		};
 		error(params_obj);
     	return true;
@@ -133,7 +134,7 @@ function E(){}
 		var commonLogFormat={
 			module:"",//模块
 			errlevel:3,
-			viewUrl:encodeURIComponent(location.href),//URL
+			viewurl:encodeURIComponent(location.href),//URL
 			file:document.currentScript.src,//出错的文件
 			line:0,//出错文件所在行
 			col:(window.event && window.event.errorCharacter) || 0,//出错文件所在列
