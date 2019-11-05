@@ -1,3 +1,4 @@
+const util = require("util")
 
 /**
 * @des 错误对象
@@ -154,6 +155,9 @@ function E(){}
 				errorMsg[i] = arg[i];
 			}
 		}
+
+		console.log(util.dateFun);
+		return false;
 
 		//异步上报错误
 		if(options.enabled){

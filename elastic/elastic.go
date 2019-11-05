@@ -3,9 +3,10 @@ package elastic
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/astaxie/beego"
 	"hank.com/web-monitor/log"
-	"time"
 )
 
 //KibanaDiscover- 对应Kibana的模板
@@ -26,40 +27,23 @@ type ErrMessage struct {
 	Stack string `json:"stack"` //堆栈错误
 }
 
-//NewKibanaDiscoverCommonLogFormat- 根据errMonitor转化KibanaDiscover
-func NewKibanaDiscoverCommonLog(commonLog *log.CommonLog) *KibanaDiscover {
-	//TODO Module必填
-	if commonLog.Module == "" || commonLog.LogLevel == 0 || commonLog.FileName == "" {
-
-	}
-
-	date := commonLog.Date
-	logLeve := log.LogLevelMsg(commonLog.LogLevel)
-	fileMsg := log.LogFileMsg(commonLog.FileName, commonLog.Line, commonLog.Col)
-
-	kibanaDiscover := &KibanaDiscover{Date: time.Now()}
-	kibanaDiscover.FieldsTag = commonLog.Module
-	kibanaDiscover.Message = fmt.Sprintf("%v %v %v %v", date, logLeve, fileMsg, commonLog.Message)
-	return kibanaDiscover
-}
-
 type Elastic struct {
-	Config *Config
+	Config    *Config
 	CommonLog *log.CommonLog
 }
 
-func NewElastic(commonLog *log.CommonLog)*Elastic{
+func NewElastic(commonLog *log.CommonLog) *Elastic {
 	config := &Config{
-		IndexName:beego.AppConfig.DefaultString("elastic.indexname","weberr"),
+		IndexName: beego.AppConfig.DefaultString("elastic.indexname", "weberr"),
 	}
-	return &Elastic{Config:config,CommonLog:commonLog}
+	return &Elastic{Config: config, CommonLog: commonLog}
 }
 
-func (ec *Elastic)GetIndexName()string{
+func (ec *Elastic) GetIndexName() string {
 	return ec.Config.IndexName + "-" + time.Unix(ec.CommonLog.Timestamp, 0).Format("2006-01-02")
 }
 
-func (ec *Elastic)CreateTable(ctx context.Context, tableName string) error {
+func (ec *Elastic) CreateTable(ctx context.Context, tableName string) error {
 	exists, err := ElasticClient().IndexExists(tableName).Do(ctx)
 	if err != nil {
 		return err
@@ -78,7 +62,7 @@ func (ec *Elastic)CreateTable(ctx context.Context, tableName string) error {
 }
 
 //BuildKibanaDiscover- 创建索引并生成数据
-func (ec *Elastic)BuildKibanaDiscover(ctx context.Context, indexName string, kibanaDiscover *KibanaDiscover) {
+func (ec *Elastic) BuildKibanaDiscover(ctx context.Context, indexName string, kibanaDiscover *KibanaDiscover) {
 
 	//创建elastic索引
 	err := ec.CreateTable(ctx, indexName)
@@ -100,21 +84,21 @@ func (ec *Elastic)BuildKibanaDiscover(ctx context.Context, indexName string, kib
 	fmt.Printf("Indexed errmonitor %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
 }
 
-func (ec *Elastic)Start(ctx context.Context){
+func (ec *Elastic) Start(ctx context.Context) {
 	//indexName 获取索引
 	indexName := ec.GetIndexName()
 
-
 	//CreateTable 获取Table
-	err :=ec.CreateTable(ctx,indexName)
-	if err != nil{
+	err := ec.CreateTable(ctx, indexName)
+	if err != nil {
 		panic(err)
 	}
 
+	l := log.NewLoggerByCommonLog(ec.CommonLog)
+
+	msg := l.WriteMsg(ec.CommonLog.LogLevel, ec.CommonLog.Message)
+
 	//Build KibanaDiscover
-	kibanaDiscover := NewKibanaDiscoverCommonLog(ec.CommonLog)
-	ec.BuildKibanaDiscover(ctx,indexName,kibanaDiscover)
+	kibanaDiscover := &KibanaDiscover{Date: time.Now(), FieldsTag: ec.CommonLog.Module, Message: msg}
+	ec.BuildKibanaDiscover(ctx, indexName, kibanaDiscover)
 }
-
-
-

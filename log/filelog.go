@@ -3,39 +3,20 @@ package log
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/astaxie/beego"
 	"net/url"
 	"strings"
+
+	"github.com/astaxie/beego"
 
 	"github.com/hpcloud/tail"
 )
 
-
-
 const (
-	MARKSTR   = "log.gif?log=" //日志标志位置
-	ENDSTR    = ` HTTP/1.1" `  //日志尾部标记
+	MARKSTR = "log.gif?log=" //日志标志位置
+	ENDSTR  = ` HTTP/1.1" `  //日志尾部标记
 )
 
-var ChanLog = make(chan *CommonLog,1)
-
-type CommonLog struct {
-	Module    string `json:"module"`    //出错的模块 应用的名称例如:xmiss
-	ViewUrl   string `json:"viewUrl"`   //请求的url
-	LogLevel  int    `json:"loglevel"`  //错误等级 3err 4Warning 5Notice 7Debug
-	FileName      string `json:"filename"`      //出错的文件
-	Line      int64  `json:"line"`      //出错文件所在行
-	Col       int64  `json:"col"`       //出错文件所在列
-	Message   string `json:"message"`   //自定义消息
-	Platform  string `json:"platform"`  //系统架构
-	Ua        string `json:"ua"`        //UserAgent浏览器信息
-	Lang      string `json:"lang"`      //使用的语言
-	Screen    string `json:"screen"`    //分辨率
-	Carset    string `json:"carset"`    //浏览器编码环境
-	Address   string `json:"address"`   //所在位置
-	Date      string `json:"date"`      //发生的时间
-	Timestamp int64  `json:"timestamp"` //发生的时间戳
-}
+var ChanLog = make(chan *CommonLog, 1)
 
 type FileLog struct {
 	Config *Config
@@ -43,28 +24,28 @@ type FileLog struct {
 
 var logMsg = make(chan string, 1)
 
-func NewFileLog()*FileLog{
+func NewFileLog() *FileLog {
 	config := &Config{
-		Logpath:beego.AppConfig.String("filelog.logpath"),
+		Logpath: beego.AppConfig.String("filelog.logpath"),
 	}
-	return &FileLog{Config:config}
+	return &FileLog{Config: config}
 }
 
 //StartGetLogServer- 启动日志服务 读写
-func (fl *FileLog)StartServer() {
+func (fl *FileLog) StartServer() {
 	go fl.ReadLogLoop()
 	go fl.WriteLog2Ws() //TODO 异步
 }
 
 //ReadLogLoop- 读取日志  TODO channel
-func (fl *FileLog)ReadLogLoop() {
+func (fl *FileLog) ReadLogLoop() {
 	t, _ := tail.TailFile(fl.Config.Logpath, tail.Config{Follow: true})
 	for line := range t.Lines {
-		logMsg <-  line.Text
+		logMsg <- line.Text
 	}
 }
 
-func (fl *FileLog)WriteLog2Ws() {
+func (fl *FileLog) WriteLog2Ws() {
 	for {
 		//读取信息
 		l := <-logMsg
@@ -83,7 +64,7 @@ func (fl *FileLog)WriteLog2Ws() {
 			panic(err)
 		}
 
-		ChanLog <-commonLog
+		ChanLog <- commonLog
 	}
 }
 
@@ -116,5 +97,3 @@ func LogFileMsg(file string, line, col int64) string {
 }
 
 //TODO func输出等级设置
-
-
