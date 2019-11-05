@@ -10,16 +10,7 @@ import (
 	"github.com/hpcloud/tail"
 )
 
-const (
-	LevelEmergency = iota
-	LevelAlert
-	LevelCritical
-	LevelError
-	LevelWarning
-	LevelNotice
-	LevelInformational
-	LevelDebug
-)
+
 
 const (
 	MARKSTR   = "log.gif?log=" //日志标志位置
@@ -31,7 +22,7 @@ var ChanLog = make(chan *CommonLog,1)
 type CommonLog struct {
 	Module    string `json:"module"`    //出错的模块 应用的名称例如:xmiss
 	ViewUrl   string `json:"viewUrl"`   //请求的url
-	Errlevel  int    `json:"errlevel"`  //错误等级 3err 4Warning 5Notice 7Debug
+	LogLevel  int    `json:"loglevel"`  //错误等级 3err 4Warning 5Notice 7Debug
 	File      string `json:"file"`      //出错的文件
 	Line      int64  `json:"line"`      //出错文件所在行
 	Col       int64  `json:"col"`       //出错文件所在列

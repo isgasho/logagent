@@ -29,12 +29,12 @@ type ErrMessage struct {
 //NewKibanaDiscoverCommonLogFormat- 根据errMonitor转化KibanaDiscover
 func NewKibanaDiscoverCommonLog(commonLog *log.CommonLog) *KibanaDiscover {
 	//TODO Module必填
-	if commonLog.Module == "" || commonLog.Errlevel == 0 || commonLog.File == "" {
+	if commonLog.Module == "" || commonLog.LogLevel == 0 || commonLog.File == "" {
 
 	}
 
 	date := commonLog.Date
-	logLeve := log.LogLevelMsg(commonLog.Errlevel)
+	logLeve := log.LogLevelMsg(commonLog.LogLevel)
 	fileMsg := log.LogFileMsg(commonLog.File, commonLog.Line, commonLog.Col)
 
 	kibanaDiscover := &KibanaDiscover{Date: time.Now()}
