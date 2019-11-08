@@ -1,6 +1,3 @@
-const logs = require('./logs')
-console.log(logs);
-
 /**
 * @des 错误对象
 * @class 
@@ -93,8 +90,9 @@ function E(){}
 	*/
 	window.onerror = function(message, file, line, column,innerError){
 		var params_obj = {
-			info:message,
-			file:file,
+			message:message,
+			// file:file,
+			filename:"index.html",
 			line:line,
 			col:column,
 			module:"webmonitor"
@@ -119,28 +117,17 @@ function E(){}
 		//获取时间格式
 		var date =dateFun();
 
-		var errorMsg = {
-			bid:options.bid,
-			soid:options.soid,
-			sid:options.sid,
-			uid:options.uid,
-			name:options.name,//商户的ID
-			code:getCodeFun(),//错误代码
-			info:"无错误描述!",//错误信息
-			stack:"",//堆栈错误
-		};
-
-		let message = JSON.stringify(errorMsg)
-
 		//公共的日志格式
 		var commonLogFormat={
 			module:"",//模块
-			errlevel:3,
+			loglevel:3,
+			EnableFileDepthType:1,
 			viewurl:encodeURIComponent(location.href),//URL
-			file:document.currentScript.src,//出错的文件
+			//file:document.currentScript.src,//出错的文件
+			filename:"index.html",
 			line:0,//出错文件所在行
 			col:(window.event && window.event.errorCharacter) || 0,//出错文件所在列
-			message:"",
+			message:arg.info,
 			address:"",//用户所在位置
 			platform:window.navigator.platform,//手机型号
 			ua:window.navigator.userAgent.toString(),//UserAgent
@@ -151,14 +138,11 @@ function E(){}
 			timestamp:GetTimestamp(date),//发生的时间
 		}
 
-		for(var i in arg){
-			if(arg[i] != ""){
-				errorMsg[i] = arg[i];
+		for(var k in arg){
+			if(arg[k] != ""){
+				commonLogFormat[k] = arg[k];
 			}
 		}
-
-		console.log(util.dateFun());
-		return false;
 
 		//异步上报错误
 		if(options.enabled){

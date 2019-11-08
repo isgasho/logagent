@@ -5,6 +5,7 @@ import (
 	"path"
 	"runtime"
 	"strconv"
+	"time"
 )
 
 const (
@@ -29,7 +30,7 @@ var levelPrefix = [LevelDebug + 1]string{"[M] ", "[A] ", "[C] ", "[E] ", "[W] ",
 
 type CommonLog struct {
 	Module              string `json:"module"`              //出错的模块 应用的名称例如:xmiss
-	ViewUrl             string `json:"viewUrl"`             //请求的url
+	ViewUrl             string `json:"viewurl"`             //请求的url
 	LogLevel            int    `json:"loglevel"`            //错误等级 3err 4Warning 5Notice 7Debug
 	FileName            string `json:"filename"`            //出错的文件
 	Line                int64  `json:"line"`                //出错文件所在行
@@ -106,11 +107,15 @@ func (l *Logger) WriteMsg(logLevel int, msg string, v ...interface{}) string {
 
 	if l.EnableFileDepthType == FileDepthCommonLog {
 		var filename string
-		var line, col int
+		var line, col int64
 		if l.FileName == "" {
 			filename = "???"
 		}
-		msg = "[" + filename + ":" + strconv.Itoa(line) + ":" + strconv.Itoa(col) + "] " + msg
+		filename = l.CommonLog.FileName
+		line = l.CommonLog.Line
+		col = l.CommonLog.Col
+
+		msg = "[" + filename + ":" + strconv.FormatInt(line, 10) + ":" + strconv.FormatInt(col, 10) + "] " + msg
 	}
 
 	//level
@@ -119,6 +124,9 @@ func (l *Logger) WriteMsg(logLevel int, msg string, v ...interface{}) string {
 		levelPre = levelPrefix[logLevel]
 	}
 	msg = levelPre + msg
+
+	msg = time.Unix(l.CommonLog.Timestamp, 0).Format("2006/01/02 15:04:05") + " " + msg
+
 	return msg
 }
 

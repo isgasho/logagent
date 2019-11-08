@@ -32,12 +32,10 @@ func Run() {
 	for {
 		select {
 		case commonLog := <-log.ChanLog:
-			{
-				//启动KibanaDiscover TODO indexName写死
-				indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
-				kd := NewKibanaDiscover(indexName, commonLog)
-				kd.RunPush()
-			}
+			//启动KibanaDiscover TODO indexName写死
+			indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+			kd := NewKibanaDiscover(indexName, commonLog)
+			kd.RunPush()
 		}
 	}
 }

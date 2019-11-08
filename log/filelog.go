@@ -51,51 +51,47 @@ func (fl *FileLog) WriteLog2Ws() {
 		l := <-logMsg
 
 		//处理每行消息
-		line := SplitLine(l)
-		if line == "" {
-			continue
-		}
-
-		commonLog := &CommonLog{}
-		err := json.Unmarshal([]byte(line), commonLog)
-		if err != nil {
-			panic(err)
-		}
-
+		commonLog := SplitLine(l)
 		if commonLog == nil || commonLog.Message == "" {
 			continue
 		}
 
 		fmt.Println(commonLog)
-
 		ChanLog <- commonLog
 	}
 }
 
 //SplitLine- 分解行
-func SplitLine(msg string) (line string) {
-	comma := strings.Index(msg, MARKSTR)
-	if comma == -1 {
-		return
-	}
-
+func SplitLine(msg string) *CommonLog {
 	//TODO 这里要改成正则匹配
+	comma := strings.Index(msg, MARKSTR)
 	endComma := strings.Index(msg, ENDSTR)
+	if comma < 0 || endComma < 0 {
+		return nil
+	}
 
 	index := comma + len(MARKSTR)
 	endindex := endComma
 
+	if index > endindex || index > len(msg) || endindex > len(msg) {
+		return nil
+	}
+
 	//头尾匹配去除得到数据
-	line = msg[index:endindex]
+	line := msg[index:endindex]
 
 	//url解码一下,nginx默认url编码
 	if line != "" {
 		line, _ = url.QueryUnescape(line)
 	}
-	return
-}
 
-//LogFileMsg-文件格式生成
-func LogFileMsg(file string, line, col int64) string {
-	return fmt.Sprintf("[%v:%v:%v]", file, line, col)
+	fmt.Println(line)
+
+	//解析参数
+	commonLog := &CommonLog{}
+	err := json.Unmarshal([]byte(line), commonLog)
+	if err != nil {
+		return nil
+	}
+	return commonLog
 }
