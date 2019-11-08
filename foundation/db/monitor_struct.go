@@ -2,13 +2,10 @@ package db
 
 import (
 	"time"
-
-	"hank.com/web-monitor/log"
 )
 
 //通用监控结构体
 type Monitor struct {
-	log.CommonLog
 	Date      time.Time `json:"@timestamp"` //发生的时间
 	FieldsTag string    `json:"fields.tag"`
 	Message   string    `json:"message"`

@@ -1,7 +1,6 @@
 package log
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"strings"
@@ -16,7 +15,7 @@ const (
 	ENDSTR  = ` HTTP/1.1" `  //日志尾部标记
 )
 
-var ChanLog = make(chan *CommonLog, 1)
+var chanLog = make(chan string, 1)
 
 type FileLog struct {
 	Config *Config
@@ -51,30 +50,30 @@ func (fl *FileLog) WriteLog2Ws() {
 		l := <-logMsg
 
 		//处理每行消息
-		commonLog := SplitLine(l)
-		if commonLog == nil || commonLog.Message == "" {
+		line := SplitLine(l)
+		if line == "" {
 			continue
 		}
 
-		fmt.Println(commonLog)
-		ChanLog <- commonLog
+		fmt.Println(line)
+		chanLog <- line
 	}
 }
 
 //SplitLine- 分解行
-func SplitLine(msg string) *CommonLog {
+func SplitLine(msg string) string {
 	//TODO 这里要改成正则匹配
 	comma := strings.Index(msg, MARKSTR)
 	endComma := strings.Index(msg, ENDSTR)
 	if comma < 0 || endComma < 0 {
-		return nil
+		return ""
 	}
 
 	index := comma + len(MARKSTR)
 	endindex := endComma
 
 	if index > endindex || index > len(msg) || endindex > len(msg) {
-		return nil
+		return ""
 	}
 
 	//头尾匹配去除得到数据
@@ -87,11 +86,5 @@ func SplitLine(msg string) *CommonLog {
 
 	fmt.Println(line)
 
-	//解析参数
-	commonLog := &CommonLog{}
-	err := json.Unmarshal([]byte(line), commonLog)
-	if err != nil {
-		return nil
-	}
-	return commonLog
+	return line
 }
