@@ -8,7 +8,6 @@ import (
 
 	"hank.com/web-monitor/foundation/db"
 
-	"github.com/astaxie/beego"
 	"hank.com/web-monitor/log"
 )
 
@@ -18,8 +17,7 @@ type KibanaDiscover struct {
 	CommonLog *log.CommonLog
 }
 
-func NewKibanaDiscover(commonLog *log.CommonLog) *KibanaDiscover {
-	indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+func NewKibanaDiscover(indexName string, commonLog *log.CommonLog) *KibanaDiscover {
 	return &KibanaDiscover{Config: nil, CommonLog: commonLog, IndexName: indexName}
 }
 
@@ -43,6 +41,5 @@ func (kd *KibanaDiscover) Start(ctx context.Context) {
 
 	//Build KibanaDiscover
 	kibanaDiscover := &db.Monitor{Date: time.Now(), FieldsTag: kd.CommonLog.Module, Message: msg}
-
 	esc.GetElasticDefault().Insert(ctx, indexName, "", kibanaDiscover)
 }
