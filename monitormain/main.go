@@ -20,8 +20,8 @@ func Main() {
 			//启动KibanaDiscover TODO indexName写死
 			indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
 
-			el := kibanadiscover.NewKibanaDiscover(indexName, commonLog)
-			el.Start(context.Background())
+			kd := kibanadiscover.NewKibanaDiscover(indexName, commonLog)
+			kd.Start(context.Background())
 		}
 	}
 }
