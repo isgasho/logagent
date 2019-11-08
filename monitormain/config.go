@@ -2,13 +2,13 @@ package monitormain
 
 import (
 	"flag"
-	"hank.com/web-monitor/elastic"
+
+	"hank.com/web-monitor/kibanadiscover"
 	"hank.com/web-monitor/log"
 )
 
-type config struct{
+type config struct {
 	lc *log.Config
-	ec *elastic.Config
+	ec *kibanadiscover.Config
 	cf *flag.FlagSet
 }
-

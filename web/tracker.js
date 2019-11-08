@@ -1,3 +1,6 @@
+const logs = require('./logs')
+console.log(logs);
+
 /**
 * @des 错误对象
 * @class 

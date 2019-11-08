@@ -116,7 +116,7 @@ var params = {
   viewurl:"",   //请求的url
   enablefiledepthtype:0,
   loglevel:0,  //错误等级 3err 4Warning 5Notice 7Debug
-  filename:,      //出错的文件
+  filename:"",      //出错的文件
   line:0,      //出错文件所在行
   col:0,       //出错文件所在列
   message:"",   //自定义消息
@@ -135,7 +135,4 @@ var logs= new Logs(params);
 
 module.exports = logs;
 
-logs.Error("大事不好,出错了")
-
-console.log(logs);
 

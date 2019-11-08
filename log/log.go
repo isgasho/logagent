@@ -34,7 +34,7 @@ type CommonLog struct {
 	FileName            string `json:"filename"`            //出错的文件
 	Line                int64  `json:"line"`                //出错文件所在行
 	Col                 int64  `json:"col"`                 //出错文件所在列
-	EnableFileDepthType int    `json:"enablefiledepthtype"` //是否需要格式化输出message
+	EnableFileDepthType int    `json:"enablefiledepthtype"` //是否需要格式化输出message 0不处理 1处理 2函数处理
 	Message             string `json:"message"`             //自定义消息
 	Platform            string `json:"platform"`            //系统架构
 	Ua                  string `json:"ua"`                  //UserAgent浏览器信息

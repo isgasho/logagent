@@ -15,7 +15,6 @@ class Logs {
   constructor(params) {
     this.level = LogLevel.LevelDebug;//日志输出等级
     this.switchlog=true;  //开关
-
     this.module=params.module   //出错的模块 应用的名称例如:xmiss
     this.viewurl=params.viewurl
     this.loglevel=params.loglevel  //错误等级 3err 4Warning 5Notice 7Debug
