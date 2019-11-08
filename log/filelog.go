@@ -56,13 +56,17 @@ func (fl *FileLog) WriteLog2Ws() {
 			continue
 		}
 
-		fmt.Println(line)
-
 		commonLog := &CommonLog{}
 		err := json.Unmarshal([]byte(line), commonLog)
 		if err != nil {
 			panic(err)
 		}
+
+		if commonLog.Message == "" {
+			continue
+		}
+
+		fmt.Println(commonLog)
 
 		ChanLog <- commonLog
 	}

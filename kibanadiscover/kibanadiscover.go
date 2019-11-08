@@ -41,5 +41,8 @@ func (kd *KibanaDiscover) Start(ctx context.Context) {
 
 	//Build KibanaDiscover
 	kibanaDiscover := &db.Monitor{Date: time.Now(), FieldsTag: kd.CommonLog.Module, Message: msg}
-	esc.GetElasticDefault().Insert(ctx, indexName, "", kibanaDiscover)
+	err = esc.GetElasticDefault().Insert(ctx, indexName, "", kibanaDiscover)
+	if err != nil {
+		panic(err)
+	}
 }
