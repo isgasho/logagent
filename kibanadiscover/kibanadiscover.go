@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/astaxie/beego"
+
 	"hank.com/goelastic/esc"
 
 	"hank.com/web-monitor/foundation/db"
@@ -25,7 +27,25 @@ func (kd *KibanaDiscover) GetIndexName() string {
 	return kd.IndexName + "-" + time.Unix(kd.CommonLog.Timestamp, 0).Format("2006-01-02")
 }
 
-func (kd *KibanaDiscover) Start(ctx context.Context) {
+func Run() {
+	//开始运行
+	for {
+		select {
+		case commonLog := <-log.ChanLog:
+			{
+				//启动KibanaDiscover TODO indexName写死
+				indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+				kd := NewKibanaDiscover(indexName, commonLog)
+				kd.RunPush()
+			}
+		}
+	}
+}
+
+func (kd *KibanaDiscover) RunPush() {
+
+	ctx := context.Background()
+
 	//indexName 获取索引
 	indexName := kd.GetIndexName()
 

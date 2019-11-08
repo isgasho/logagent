@@ -62,7 +62,7 @@ func (fl *FileLog) WriteLog2Ws() {
 			panic(err)
 		}
 
-		if commonLog.Message == "" {
+		if commonLog == nil || commonLog.Message == "" {
 			continue
 		}
 
