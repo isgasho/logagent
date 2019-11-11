@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "hank.com/web-monitor/foundation"
-	"hank.com/web-monitor/monitormain"
+	"hank.com/logagent/logagentmain"
+	_ "hank.com/logagent/server/foundation"
 )
 
 func main() {
-	monitormain.Main()
+	logagentmain.Main()
 }

@@ -1,8 +1,8 @@
-# web-monitor
+# logagent
 前端监控-异常,api调用
 
 **后端:**
-- 安装启动nginx,将web-monitor/web/log.gif放到www访问目录,地址可自定
+- 安装启动nginx,将logagent/web/log.gif放到www访问目录,地址可自定
 
 
 **优点：**

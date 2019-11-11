@@ -1,4 +1,4 @@
-package kibanadiscover
+package server
 
 type Config struct {
 }

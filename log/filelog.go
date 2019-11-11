@@ -1,12 +1,13 @@
 package log
 
 import (
-	"fmt"
+	"log"
 	"net/url"
 	"strings"
 
-	"github.com/astaxie/beego"
+	"hank.com/logagent/server"
 
+	"github.com/astaxie/beego"
 	"github.com/hpcloud/tail"
 )
 
@@ -14,8 +15,6 @@ const (
 	MARKSTR = "log.gif?log=" //日志标志位置
 	ENDSTR  = ` HTTP/1.1" `  //日志尾部标记
 )
-
-var chanLog = make(chan string, 1)
 
 type FileLog struct {
 	Config *Config
@@ -55,8 +54,7 @@ func (fl *FileLog) WriteLog2Ws() {
 			continue
 		}
 
-		fmt.Println(line)
-		chanLog <- line
+		server.ChanLog <- line
 	}
 }
 
@@ -66,6 +64,8 @@ func SplitLine(msg string) string {
 	comma := strings.Index(msg, MARKSTR)
 	endComma := strings.Index(msg, ENDSTR)
 	if comma < 0 || endComma < 0 {
+		//打印下日志 TODO 优化
+		log.Println(msg)
 		return ""
 	}
 
@@ -73,6 +73,8 @@ func SplitLine(msg string) string {
 	endindex := endComma
 
 	if index > endindex || index > len(msg) || endindex > len(msg) {
+		//打印下日志 TODO 优化
+		log.Println(msg)
 		return ""
 	}
 
@@ -84,7 +86,8 @@ func SplitLine(msg string) string {
 		line, _ = url.QueryUnescape(line)
 	}
 
-	fmt.Println(line)
+	//TODO 优化
+	log.Println(line)
 
 	return line
 }

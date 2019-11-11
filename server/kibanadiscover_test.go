@@ -1,10 +1,10 @@
-package kibanadiscover
+package server
 
 import (
 	"encoding/json"
 	"testing"
 
-	"hank.com/web-monitor/log"
+	"hank.com/logagent/log"
 )
 
 func TestKibanadiscover(t *testing.T) {

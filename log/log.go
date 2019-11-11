@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"strconv"
 	"time"
+
+	"hank.com/logagent/server"
 )
 
 const (
@@ -28,25 +30,6 @@ const (
 //大小为8的数组
 var levelPrefix = [LevelDebug + 1]string{"[M] ", "[A] ", "[C] ", "[E] ", "[W] ", "[N] ", "[I] ", "[D] "}
 
-type CommonLog struct {
-	Module              string `json:"module"`              //出错的模块 应用的名称例如:xmiss
-	ViewUrl             string `json:"viewurl"`             //请求的url
-	LogLevel            int    `json:"loglevel"`            //错误等级 3err 4Warning 5Notice 7Debug
-	FileName            string `json:"filename"`            //出错的文件
-	Line                int64  `json:"line"`                //出错文件所在行
-	Col                 int64  `json:"col"`                 //出错文件所在列
-	EnableFileDepthType int    `json:"enablefiledepthtype"` //是否需要格式化输出message 0不处理 1处理 2函数处理
-	Message             string `json:"message"`             //自定义消息
-	Platform            string `json:"platform"`            //系统架构
-	Ua                  string `json:"ua"`                  //UserAgent浏览器信息
-	Lang                string `json:"lang"`                //使用的语言
-	Screen              string `json:"screen"`              //分辨率
-	Carset              string `json:"carset"`              //浏览器编码环境
-	Address             string `json:"address"`             //所在位置
-	Date                string `json:"date"`                //发生的时间
-	Timestamp           int64  `json:"timestamp"`           //发生的时间戳
-}
-
 type Log interface {
 	SetLevel(level int)
 	WriteMsg(logLevel int, msg string, v ...interface{}) string
@@ -58,7 +41,7 @@ type Log interface {
 }
 
 type Logger struct {
-	*CommonLog
+	*server.CommonLog
 	Level               int
 	loggerFuncCallDepth int
 	Switchlog           bool //日志开关
@@ -75,7 +58,7 @@ func NewLogger() *Logger {
 }
 
 //NewLoggerByCommonLog-
-func NewLoggerByCommonLog(commonLog *CommonLog) Log {
+func NewLoggerByCommonLog(commonLog *server.CommonLog) Log {
 	l := new(Logger)
 	l.CommonLog = commonLog
 	l.Level = LevelDebug
