@@ -32,42 +32,41 @@ type CommonLog struct {
 	Timestamp           int64  `json:"timestamp"`           //发生的时间戳
 }
 
-type KibanaDiscover struct {
-	Config    *Config
+type ElasticMessage struct {
 	IndexName string
-	CommonLog *CommonLog
+	Value     string
 }
 
 //NewKibanaDiscover -
-func NewKibanaDiscover(indexName string) *KibanaDiscover {
-	return &KibanaDiscover{Config: nil, IndexName: indexName}
+func NewKibanaDiscover(indexName string) *ElasticMessage {
+	return &ElasticMessage{IndexName: indexName}
 }
 
-func (kd *KibanaDiscover) GetIndexName() string {
-	return kd.IndexName + "-" + time.Now().Format("2006-01-02")
+func GetIndexName(indexName string) string {
+	return indexName + "-" + time.Now().Format("2006-01-02")
 }
 
 func Run() {
 	//启动KibanaDiscover TODO indexName写死
 	indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
-	kd := NewKibanaDiscover(indexName)
 	//开始运行
 	for {
 		select {
 		case bodyJson := <-ChanLog:
 			//接收到了信息
-			log.Println(bodyJson)
-			kd.RunPush(bodyJson)
+			elasticMessage := &ElasticMessage{IndexName: indexName, Value: bodyJson}
+			log.Println(elasticMessage)
+			SendMessage(elasticMessage)
 		}
 	}
 }
 
-func (kd *KibanaDiscover) RunPush(bodyJson string) {
+func SendMessage(elasticMessage *ElasticMessage) {
 
 	ctx := context.Background()
 
 	//indexName 获取索引
-	indexName := kd.GetIndexName()
+	indexName := GetIndexName(elasticMessage.IndexName)
 
 	//CreateTable 获取Table
 	err := esc.GetElasticDefault().CreateTable(ctx, indexName)
@@ -76,11 +75,11 @@ func (kd *KibanaDiscover) RunPush(bodyJson string) {
 	}
 
 	var bodyMap map[string]interface{}
-	json.Unmarshal([]byte(bodyJson), &bodyMap)
+	json.Unmarshal([]byte(elasticMessage.Value), &bodyMap)
 
 	err = esc.GetElasticDefault().Insert(ctx, indexName, "", &bodyMap)
 	if err != nil {
-		log.Println("Elastic Insert err：" + bodyJson)
+		log.Println("Elastic Insert err：" + elasticMessage.Value)
 		//panic(err)
 	}
 }
