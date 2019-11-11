@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -35,45 +34,31 @@ type KibanaDiscover struct {
 	Config    *Config
 	IndexName string
 	CommonLog *CommonLog
-	BodyMap   map[string]interface{}
 }
 
 //NewKibanaDiscover -
-func NewKibanaDiscover(indexName string, bodyMap map[string]interface{}) *KibanaDiscover {
-	return &KibanaDiscover{Config: nil, BodyMap: bodyMap, IndexName: indexName}
-}
-
-func NewKibanaDiscoverByJson(indexName string, bodyJson string) *KibanaDiscover {
-	var bodyMap map[string]interface{}
-	err := json.Unmarshal([]byte(bodyJson), &bodyMap)
-	//TODO 错误处理
-	if err != nil {
-
-	}
-	return NewKibanaDiscover(indexName, bodyMap)
+func NewKibanaDiscover(indexName string) *KibanaDiscover {
+	return &KibanaDiscover{Config: nil, IndexName: indexName}
 }
 
 func (kd *KibanaDiscover) GetIndexName() string {
-	if kd.CommonLog == nil || kd.CommonLog.Timestamp == 0 {
-		return kd.IndexName + "-" + time.Now().Format("2006-01-02")
-	}
-	return kd.IndexName + "-" + time.Unix(kd.CommonLog.Timestamp, 0).Format("2006-01-02")
+	return kd.IndexName + "-" + time.Now().Format("2006-01-02")
 }
 
 func Run() {
+	//启动KibanaDiscover TODO indexName写死
+	indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+	kd := NewKibanaDiscover(indexName)
 	//开始运行
 	for {
 		select {
 		case bodyJson := <-ChanLog:
-			//启动KibanaDiscover TODO indexName写死
-			indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
-			kd := NewKibanaDiscoverByJson(indexName, bodyJson)
-			kd.RunPush()
+			kd.RunPush(bodyJson)
 		}
 	}
 }
 
-func (kd *KibanaDiscover) RunPush() {
+func (kd *KibanaDiscover) RunPush(bodyJson string) {
 
 	ctx := context.Background()
 
@@ -86,7 +71,7 @@ func (kd *KibanaDiscover) RunPush() {
 		panic(err)
 	}
 
-	err = esc.GetElasticDefault().Insert(ctx, indexName, "", &kd.BodyMap)
+	err = esc.GetElasticDefault().Insert(ctx, indexName, "", bodyJson)
 	if err != nil {
 		panic(err)
 	}
