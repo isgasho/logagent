@@ -64,8 +64,6 @@ func SplitLine(msg string) string {
 	comma := strings.Index(msg, MARKSTR)
 	endComma := strings.Index(msg, ENDSTR)
 	if comma < 0 || endComma < 0 {
-		//打印下日志 TODO 优化
-		log.Println(msg)
 		return ""
 	}
 
@@ -74,7 +72,7 @@ func SplitLine(msg string) string {
 
 	if index > endindex || index > len(msg) || endindex > len(msg) {
 		//打印下日志 TODO 优化
-		log.Println(msg)
+		log.Println("Index Err：" + msg)
 		return ""
 	}
 
@@ -85,9 +83,6 @@ func SplitLine(msg string) string {
 	if line != "" {
 		line, _ = url.QueryUnescape(line)
 	}
-
-	//TODO 优化
-	log.Println(line)
 
 	return line
 }

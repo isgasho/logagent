@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -53,6 +55,8 @@ func Run() {
 	for {
 		select {
 		case bodyJson := <-ChanLog:
+			//接收到了信息
+			log.Println(bodyJson)
 			kd.RunPush(bodyJson)
 		}
 	}
@@ -71,8 +75,12 @@ func (kd *KibanaDiscover) RunPush(bodyJson string) {
 		panic(err)
 	}
 
-	err = esc.GetElasticDefault().Insert(ctx, indexName, "", bodyJson)
+	var bodyMap map[string]interface{}
+	json.Unmarshal([]byte(bodyJson), &bodyMap)
+
+	err = esc.GetElasticDefault().Insert(ctx, indexName, "", &bodyMap)
 	if err != nil {
-		panic(err)
+		log.Println("Elastic Insert err：" + bodyJson)
+		//panic(err)
 	}
 }
