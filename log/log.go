@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"hank.com/logagent/server"
+	"hank.com/logagent/server/store"
 )
 
 const (
@@ -41,7 +41,7 @@ type Log interface {
 }
 
 type Logger struct {
-	*server.CommonLog
+	*store.CommonLog
 	Level               int
 	loggerFuncCallDepth int
 	Switchlog           bool //日志开关
@@ -58,7 +58,7 @@ func NewLogger() *Logger {
 }
 
 //NewLoggerByCommonLog-
-func NewLoggerByCommonLog(commonLog *server.CommonLog) Log {
+func NewLoggerByCommonLog(commonLog *store.CommonLog) Log {
 	l := new(Logger)
 	l.CommonLog = commonLog
 	l.Level = LevelDebug

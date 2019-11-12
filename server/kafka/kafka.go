@@ -14,3 +14,7 @@ func NewKafkaProducer() (client sarama.SyncProducer, err error) {
 	addrs := beego.AppConfig.String("kafka.addrs")
 	return sarama.NewSyncProducer([]string{addrs}, config)
 }
+
+func ProducerRun() {
+
+}

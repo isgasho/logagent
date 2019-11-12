@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"hank.com/logagent/kafka"
+	"hank.com/logagent/server/kafka"
 
 	"github.com/Shopify/sarama"
 	"github.com/astaxie/beego"
@@ -21,7 +21,7 @@ type FileLog struct {
 	Config *Config
 }
 
-var logMsg = make(chan string, 1)
+var bodyJson = make(chan string, 0)
 
 //StartGetLogServer- 启动日志服务 读写
 func Run() {
