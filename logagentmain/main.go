@@ -7,8 +7,7 @@ import (
 
 func Main() {
 	//客户端日志系统启动
-	fl := log.NewFileLog()
-	fl.StartServer()
+	log.Run()
 
 	//服务端启动
 	server.Run()

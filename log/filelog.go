@@ -5,8 +5,9 @@ import (
 	"net/url"
 	"strings"
 
-	"hank.com/logagent/server"
+	"hank.com/logagent/kafka"
 
+	"github.com/Shopify/sarama"
 	"github.com/astaxie/beego"
 	"github.com/hpcloud/tail"
 )
@@ -22,39 +23,36 @@ type FileLog struct {
 
 var logMsg = make(chan string, 1)
 
-func NewFileLog() *FileLog {
-	config := &Config{
-		Logpath: beego.AppConfig.String("filelog.logpath"),
-	}
-	return &FileLog{Config: config}
-}
-
 //StartGetLogServer- 启动日志服务 读写
-func (fl *FileLog) StartServer() {
-	go fl.ReadLogLoop()
-	go fl.WriteLog2Ws() //TODO 异步
+func Run() {
+	//初始化
+	go ReadLogLoop()
 }
 
 //ReadLogLoop- 读取日志  TODO channel
-func (fl *FileLog) ReadLogLoop() {
-	t, _ := tail.TailFile(fl.Config.Logpath, tail.Config{Follow: true})
+func ReadLogLoop() {
+	t, _ := tail.TailFile(beego.AppConfig.String("filelog.logpath"), tail.Config{Follow: true})
 	for line := range t.Lines {
-		logMsg <- line.Text
-	}
-}
-
-func (fl *FileLog) WriteLog2Ws() {
-	for {
-		//读取信息
-		l := <-logMsg
-
 		//处理每行消息
-		line := SplitLine(l)
-		if line == "" {
-			continue
+		bodyJson := SplitLine(line.Text)
+
+		//TODO 封装
+		product, err := kafka.NewKafkaProducer()
+		if err != nil {
+			log.Println("NewKafkaProducer Err：" + err.Error())
+			panic(err)
 		}
 
-		server.ChanLog <- line
+		//发送数据
+		msg := &sarama.ProducerMessage{}
+		msg.Topic = beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+		msg.Value = sarama.StringEncoder(bodyJson)
+		pid, offset, err := product.SendMessage(msg)
+		if err != nil {
+			log.Println("NewKafkaProducer Err：" + err.Error())
+			panic(err)
+		}
+		log.Printf("pid:%v offset:%v\n", pid, offset)
 	}
 }
 
