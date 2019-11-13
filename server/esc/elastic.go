@@ -3,6 +3,7 @@ package esc
 import (
 	"context"
 	"fmt"
+	"github.com/astaxie/beego"
 
 	"github.com/astaxie/beego/logs"
 	"github.com/olivere/elastic"
@@ -19,7 +20,7 @@ type ElasticSource struct {
 func Init() {
 	logs.Debug("|foundation|init|elastic|Init")
 	//读取配置
-	redissource := ""
+	redissource := beego.AppConfig.String("elastic.url")
 	sniff := false
 	if redissource != "" {
 		InitElasticServer(redissource, &sniff)
@@ -49,9 +50,6 @@ func GetElasticDefault() *ElasticSource {
 //NewClient -
 func NewClient(config *config.Config) (*ElasticSource, error) {
 	c, err := elastic.NewClientFromConfig(config)
-	if err != nil {
-		panic(err)
-	}
 	return &ElasticSource{c}, err
 }
 

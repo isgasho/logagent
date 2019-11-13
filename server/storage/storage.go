@@ -1,17 +1,16 @@
-package store
+package storage
 
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/Shopify/sarama"
 	"log"
 	"time"
-
 	"github.com/astaxie/beego"
-
-	"hank.com/goelastic/esc"
+	"hank.com/logagent/server/esc"
+	"github.com/olivere/elastic/config"
 )
-
-var ChanLog = make(chan string, 1)
 
 type CommonLog struct {
 	Module              string `json:"module"`              //出错的模块 应用的名称例如:xmiss
@@ -34,11 +33,11 @@ type CommonLog struct {
 
 type ElasticMessage struct {
 	IndexName string
-	Value     string
+	Value     []byte
 }
 
 //NewKibanaDiscover -
-func NewKibanaDiscover(indexName string) *ElasticMessage {
+func NewElasticMessage(indexName string) *ElasticMessage {
 	return &ElasticMessage{IndexName: indexName}
 }
 
@@ -48,20 +47,44 @@ func GetIndexName(indexName string) string {
 
 func Run() {
 	//启动KibanaDiscover TODO indexName写死
-	indexName := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+	topic := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+	//kafka数据
+	addrs := beego.AppConfig.String("kafka.addrs")
+	consumer, err := sarama.NewConsumer([]string{addrs}, nil)
+	if err != nil {
+		fmt.Printf("fail to start consumer, err:%v\n", err)
+		panic(err)
+		return
+	}
+
 	//开始运行
 	for {
-		select {
-		case bodyJson := <-ChanLog:
-			//接收到了信息
-			elasticMessage := &ElasticMessage{IndexName: indexName, Value: bodyJson}
-			log.Println(elasticMessage)
-			SendMessage(elasticMessage)
+		partitionList, err := consumer.Partitions(topic) // 根据topic取到所有的分区
+		if err != nil {
+			fmt.Printf("fail to get list of partition:err%v\n", err)
+			panic(err)
+			return
+		}
+
+		for partition := range partitionList { // 遍历所有的分区
+			// 针对每个分区创建一个对应的分区消费者
+			pc, err := consumer.ConsumePartition(topic, int32(partition), sarama.OffsetNewest)
+			if err != nil {
+				fmt.Printf("failed to start consumer for partition %d,err:%v\n", partition, err)
+				return
+			}
+			defer pc.AsyncClose()
+			// 异步从每个分区消费信息
+			for msg := range pc.Messages() {
+				elasticMessage := &ElasticMessage{IndexName:topic,Value:msg.Value}
+				StoringData(elasticMessage)
+			}
 		}
 	}
 }
 
-func SendMessage(elasticMessage *ElasticMessage) {
+//StoringData -
+func StoringData(elasticMessage *ElasticMessage) {
 
 	ctx := context.Background()
 
@@ -75,11 +98,21 @@ func SendMessage(elasticMessage *ElasticMessage) {
 	}
 
 	var bodyMap map[string]interface{}
-	json.Unmarshal([]byte(elasticMessage.Value), &bodyMap)
+	err =json.Unmarshal(elasticMessage.Value, &bodyMap)
+	if err != nil{
+		return
+	}
 
-	err = esc.GetElasticDefault().Insert(ctx, indexName, "", &bodyMap)
+	sniff := false
+	elasticSource,err := esc.NewClient(&config.Config{URL:beego.AppConfig.String("elastic.url"),Sniff:&sniff})
+	if err != nil{
+		log.Println("Elastic NewClient err：" + beego.AppConfig.String("elastic.url"))
+		panic(err)
+	}
+
+	err = elasticSource.Insert(ctx, indexName, "", &bodyMap)
 	if err != nil {
-		log.Println("Elastic Insert err：" + elasticMessage.Value)
-		//panic(err)
+		log.Println("Elastic Insert err：" + string(elasticMessage.Value))
+		panic(err)
 	}
 }

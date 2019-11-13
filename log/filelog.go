@@ -7,7 +7,6 @@ import (
 
 	"hank.com/logagent/server/kafka"
 
-	"github.com/Shopify/sarama"
 	"github.com/astaxie/beego"
 	"github.com/hpcloud/tail"
 )
@@ -20,8 +19,6 @@ const (
 type FileLog struct {
 	Config *Config
 }
-
-var bodyJson = make(chan string, 0)
 
 //StartGetLogServer- 启动日志服务 读写
 func Run() {
@@ -36,23 +33,7 @@ func ReadLogLoop() {
 		//处理每行消息
 		bodyJson := SplitLine(line.Text)
 
-		//TODO 封装
-		product, err := kafka.NewKafkaProducer()
-		if err != nil {
-			log.Println("NewKafkaProducer Err：" + err.Error())
-			panic(err)
-		}
-
-		//发送数据
-		msg := &sarama.ProducerMessage{}
-		msg.Topic = beego.AppConfig.DefaultString("elastic.indexname", "weberr")
-		msg.Value = sarama.StringEncoder(bodyJson)
-		pid, offset, err := product.SendMessage(msg)
-		if err != nil {
-			log.Println("NewKafkaProducer Err：" + err.Error())
-			panic(err)
-		}
-		log.Printf("pid:%v offset:%v\n", pid, offset)
+		kafka.BodyJson <- bodyJson
 	}
 }
 

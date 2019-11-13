@@ -3,13 +3,13 @@ package logagentmain
 import (
 	"flag"
 
-	"hank.com/logagent/server/store"
+	"hank.com/logagent/server/storage"
 
 	"hank.com/logagent/log"
 )
 
 type config struct {
 	lc *log.Config
-	ec *store.Config
+	ec *storage.Config
 	cf *flag.FlagSet
 }

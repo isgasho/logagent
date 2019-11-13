@@ -3,7 +3,7 @@ package logagentmain
 import (
 	"hank.com/logagent/log"
 	"hank.com/logagent/server/kafka"
-	"hank.com/logagent/server/store"
+	"hank.com/logagent/server/storage"
 )
 
 func Main() {
@@ -14,5 +14,5 @@ func Main() {
 	kafka.ProducerRun()
 
 	//服务端启动
-	store.Run()
+	storage.Run()
 }
