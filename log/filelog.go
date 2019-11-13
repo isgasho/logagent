@@ -33,6 +33,10 @@ func ReadLogLoop() {
 		//处理每行消息
 		bodyJson := SplitLine(line.Text)
 
+		if bodyJson == ""{
+			continue
+		}
+
 		kafka.BodyJson <- bodyJson
 	}
 }
