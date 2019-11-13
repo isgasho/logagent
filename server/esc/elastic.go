@@ -93,7 +93,9 @@ func (es *ElasticSource) Insert(ctx context.Context, tableName string, id string
 		Id(id).
 		BodyJson(data).
 		Do(ctx)
-	fmt.Printf("Indexed elastic %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+	if err == nil{
+		fmt.Printf("Indexed elastic %s to index %s, type %s\n", put1.Id, put1.Index, put1.Type)
+	}
 	return err
 }
 

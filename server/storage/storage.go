@@ -46,16 +46,19 @@ func GetIndexName(indexName string) string {
 }
 
 func Run() {
-	//启动KibanaDiscover TODO indexName写死
-	topic := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
-	//kafka数据
-	addrs := beego.AppConfig.String("kafka.addrs")
-	consumer, err := sarama.NewConsumer([]string{addrs}, nil)
+	var addrs []string
+	if addrStr := beego.AppConfig.String("kafka.addrs");addrStr != ""{
+		json.Unmarshal([]byte(addrStr),&addrs)
+	}
+	consumer, err := sarama.NewConsumer(addrs, nil)
 	if err != nil {
 		fmt.Printf("fail to start consumer, err:%v\n", err)
 		panic(err)
 		return
 	}
+
+	//TODO indexName写死
+	topic := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
 
 	//开始运行
 	for {
@@ -91,18 +94,6 @@ func StoringData(elasticMessage *ElasticMessage) {
 	//indexName 获取索引
 	indexName := GetIndexName(elasticMessage.IndexName)
 
-	//CreateTable 获取Table
-	err := esc.GetElasticDefault().CreateTable(ctx, indexName)
-	if err != nil {
-		panic(err)
-	}
-
-	var bodyMap map[string]interface{}
-	err =json.Unmarshal(elasticMessage.Value, &bodyMap)
-	if err != nil{
-		return
-	}
-
 	sniff := false
 	elasticSource,err := esc.NewClient(&config.Config{URL:beego.AppConfig.String("elastic.url"),Sniff:&sniff})
 	if err != nil{
@@ -110,9 +101,22 @@ func StoringData(elasticMessage *ElasticMessage) {
 		panic(err)
 	}
 
+	//CreateTable 获取Table
+	err = elasticSource.CreateTable(ctx, indexName)
+	if err != nil {
+		panic(err)
+	}
+
+	var bodyMap map[string]interface{}
+	err =json.Unmarshal(elasticMessage.Value, &bodyMap)
+	if err != nil{
+		log.Println("Elastic bodyMap Unmarshal err：" + string(elasticMessage.Value))
+		return
+	}
+
 	err = elasticSource.Insert(ctx, indexName, "", &bodyMap)
 	if err != nil {
 		log.Println("Elastic Insert err：" + string(elasticMessage.Value))
-		panic(err)
+		//panic(err) 会报解析错误
 	}
 }
