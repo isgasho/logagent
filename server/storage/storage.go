@@ -34,14 +34,32 @@ type ElasticMessage struct {
 	IndexName string
 	CommonLog *CommonLog
 	Value     []byte
+
+	UpTime time.Time
+}
+
+func NewElasticMessage(indexName string,value []byte)(elasticMessage *ElasticMessage,err error){
+	e := &ElasticMessage{IndexName:indexName,Value:value}
+
+	//解析公共参数
+	err = json.Unmarshal(value, &e.CommonLog)
+	if err != nil {
+		log.Printf("commonLog Unmarshal： %v|Err|%v",string(value),err)
+		e.CommonLog = nil
+	}
+
+	//记录上传时间
+	if e.CommonLog != nil && e.CommonLog.Timestamp != 0 {
+		e.UpTime = time.Unix(e.CommonLog.Timestamp, 0)
+	}else{
+		e.UpTime = time.Now()
+	}
+
+	return e,err
 }
 
 func (e *ElasticMessage) GetIndexNameWithTime(indexName string) string {
-	upTime := time.Now()
-	if e.CommonLog != nil && e.CommonLog.Timestamp != 0 {
-		upTime = time.Unix(e.CommonLog.Timestamp, 0)
-	}
-	return indexName + "-" + upTime.Format("2006-01-02")
+	return indexName + "-" + e.UpTime.Format("2006-01-02")
 }
 
 func Run() {
@@ -49,44 +67,31 @@ func Run() {
 	if addrStr := beego.AppConfig.String("kafka.addrs"); addrStr != "" {
 		json.Unmarshal([]byte(addrStr), &addrs)
 	}
+
 	consumer, err := sarama.NewConsumer(addrs, nil)
 	if err != nil {
-		fmt.Printf("fail to start consumer, err:%v\n", err)
+		log.Printf("fail to start consumer, err:%v\n", err)
 		panic(err)
 		return
 	}
 
 	//TODO indexName写死
 	topic := beego.AppConfig.DefaultString("elastic.indexname", "weberr")
+	partition,_ := beego.AppConfig.Int("kafka.partition")
 
-	//开始运行
-	partitionList, err := consumer.Partitions(topic) // 根据topic取到所有的分区
+	partitionConsumer, err := consumer.ConsumePartition(topic, int32(partition), sarama.OffsetNewest)
 	if err != nil {
-		fmt.Printf("fail to get list of partition:err%v\n", err)
-		panic(err)
+		fmt.Printf("failed to start consumer for partition %d,err:%v\n", partition, err)
 		return
 	}
+	defer partitionConsumer.AsyncClose()
+	for{
+		msg := <- partitionConsumer.Messages()
 
-	for partition := range partitionList { // 遍历所有的分区
-		// 针对每个分区创建一个对应的分区消费者
-		pc, err := consumer.ConsumePartition(topic, int32(partition), sarama.OffsetNewest)
-		if err != nil {
-			fmt.Printf("failed to start consumer for partition %d,err:%v\n", partition, err)
-			return
-		}
-		defer pc.AsyncClose()
-		// 异步从每个分区消费信息
-		for msg := range pc.Messages() {
-			elasticMessage := &ElasticMessage{IndexName: topic, Value: msg.Value}
-			err := json.Unmarshal(msg.Value, &elasticMessage.CommonLog)
-			if err != nil {
-				continue
-			}
-
-			StoringData(elasticMessage)
-		}
+		log.Println("msg reciver："+string(msg.Value))
+		elasticMessage,_ := NewElasticMessage(topic,msg.Value)
+		StoringData(elasticMessage)
 	}
-
 }
 
 //StoringData -
@@ -95,7 +100,7 @@ func StoringData(elasticMessage *ElasticMessage) {
 	var bodyMap map[string]interface{}
 	err := json.Unmarshal(elasticMessage.Value, &bodyMap)
 	if err != nil {
-		log.Println("Elastic bodyMap Unmarshal err：" + string(elasticMessage.Value))
+		log.Printf("Elastic bodyMap Unmarshal： %v|Err|%v",string(elasticMessage.Value),err)
 		return
 	}
 
@@ -117,11 +122,7 @@ func StoringData(elasticMessage *ElasticMessage) {
 		panic(err)
 	}
 
-	if elasticMessage.CommonLog != nil && elasticMessage.CommonLog.Timestamp != 0 {
-		bodyMap["time"] = time.Unix(elasticMessage.CommonLog.Timestamp, 0)
-	} else {
-		bodyMap["time"] = time.Now()
-	}
+	bodyMap["time"]=elasticMessage.UpTime
 
 	err = elasticSource.Insert(ctx, indexName, "", &bodyMap)
 	if err != nil {

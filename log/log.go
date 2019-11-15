@@ -44,6 +44,7 @@ type Logger struct {
 	*storage.CommonLog
 	Level               int
 	loggerFuncCallDepth int
+	EnableFileDepthType int
 	Switchlog           bool //日志开关
 }
 

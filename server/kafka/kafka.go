@@ -2,9 +2,9 @@ package kafka
 
 import (
 	"encoding/json"
-	"log"
 	"github.com/Shopify/sarama"
 	"github.com/astaxie/beego"
+	"log"
 )
 
 var BodyJson = make(chan string, 0)
@@ -23,10 +23,10 @@ func NewKafkaProducer() (client sarama.SyncProducer, err error) {
 }
 
 func ProducerRun() {
-	go WriteLoop()
+	go LoopProducer()
 }
 
-func WriteLoop(){
+func LoopProducer(){
 	//TODO 出现错误了是否可以尝试重连
 	product, err := NewKafkaProducer()
 	if err != nil {
@@ -51,3 +51,4 @@ func WriteLoop(){
 		log.Printf("pid:%v offset:%v\n", pid, offset)
 	}
 }
+
