@@ -38,23 +38,20 @@ type ElasticMessage struct {
 	UpTime time.Time
 }
 
+//NewElasticMessage-
 func NewElasticMessage(indexName string,value []byte)(elasticMessage *ElasticMessage,err error){
 	e := &ElasticMessage{IndexName:indexName,Value:value}
 
 	//解析公共参数
-	err = json.Unmarshal(value, &e.CommonLog)
+	e.CommonLog = &CommonLog{}
+	err = json.Unmarshal(value, e.CommonLog)
 	if err != nil {
 		log.Printf("commonLog Unmarshal： %v|Err|%v",string(value),err)
 		e.CommonLog = nil
 	}
 
 	//记录上传时间
-	if e.CommonLog != nil && e.CommonLog.Timestamp != 0 {
-		e.UpTime = time.Unix(e.CommonLog.Timestamp, 0)
-	}else{
-		e.UpTime = time.Now()
-	}
-
+	e.UpTime = time.Unix(e.CommonLog.Timestamp, 0)
 	return e,err
 }
 

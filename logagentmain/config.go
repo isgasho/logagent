@@ -5,11 +5,11 @@ import (
 
 	"hank.com/logagent/server/storage"
 
-	"hank.com/logagent/log"
+	"hank.com/logagent/input"
 )
 
 type config struct {
-	lc *log.Config
+	lc *input.Config
 	ec *storage.Config
 	cf *flag.FlagSet
 }
