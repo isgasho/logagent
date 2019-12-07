@@ -51,43 +51,19 @@ func ReadLogLoop() {
 	for line := range t.Lines {
 		//读取并设置最新文件偏移量信息
 		offset,_ = t.Tell()
-		SetFileOffset(fileName,offset)
 
 		//处理每行消息
 		bodyJson := SplitLine(line.Text)
 		if bodyJson == ""{
+			SetFileOffset(fileName,offset)
 			continue
 		}
 
 		kafka.BodyJson <- bodyJson
+
+		//TODO 记住中断已经处理的读取位置
+		SetFileOffset(fileName,offset)
 	}
-}
-
-//SetFileOffset -设置文件的偏移量
-func SetFileOffset(fileName string,offset int64) (err error){
-	content := fmt.Sprintf("%v %v",offset,fileName)
-	err = util.WriteFile(offsetPath,content)
-	return
-}
-
-//GetFileOffset -获取文件的偏移量
-func GetFileOffset(offsetAdd *int64) (offset int64,err error){
-	//从内存读取
-	if *offsetAdd !=0{
-		return  *offsetAdd,nil
-	}
-
-	//持久化硬盘读取
-	oStr,err  := util.ReadFile(offsetPath)
-	if err != nil{
-		//一开始木有文件会抛出异常
-		log.Println("ReadFile Err：" + err.Error())
-		return 0,err
-	}
-	ot := strings.Split(oStr," ")
-	offset, _ = strconv.ParseInt(ot[0], 10, 64)
-
-	return offset,nil
 }
 
 //SplitLine- 分解行
@@ -117,4 +93,31 @@ func SplitLine(msg string) string {
 	}
 
 	return line
+}
+
+//SetFileOffset -设置文件的偏移量
+func SetFileOffset(name string,offset int64) (err error){
+	content := fmt.Sprintf("%v %v",offset,name)
+	err = util.WriteFile(offsetPath,content)
+	return
+}
+
+//GetFileOffset -获取文件的偏移量
+func GetFileOffset(offsetAdd *int64) (offset int64,err error){
+	//从内存读取
+	if *offsetAdd !=0{
+		return  *offsetAdd,nil
+	}
+
+	//持久化硬盘读取
+	oStr,err  := util.ReadFile(offsetPath)
+	if err != nil{
+		//一开始木有文件会抛出异常
+		log.Println("ReadFile Err：" + err.Error())
+		return 0,err
+	}
+	ot := strings.Split(oStr," ")
+	offset, _ = strconv.ParseInt(ot[0], 10, 64)
+
+	return offset,nil
 }
