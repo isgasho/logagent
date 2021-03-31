@@ -2,16 +2,13 @@ package input
 
 import (
 	"fmt"
-	"hank.com/logagent/server/kafka"
-	"hank.com/logagent/util"
+	"github.com/friendlyhank/logagent/server/kafka"
+	"github.com/friendlyhank/util/file"
 	"log"
 	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	// "hank.com/logagent/server/kafka"
-
 	"github.com/astaxie/beego"
 	"github.com/hpcloud/tail"
 )
@@ -61,7 +58,7 @@ func ReadLogLoop() {
 
 		kafka.BodyJson <- bodyJson
 
-		//TODO 记住中断已经处理的读取位置
+		//TODO Hank设置记录位置可以优化
 		SetFileOffset(fileName,offset)
 	}
 }
@@ -98,7 +95,7 @@ func SplitLine(msg string) string {
 //SetFileOffset -设置文件的偏移量
 func SetFileOffset(name string,offset int64) (err error){
 	content := fmt.Sprintf("%v %v",offset,name)
-	err = util.WriteFile(offsetPath,content)
+	err = file.WriteFile(offsetPath,content)
 	return
 }
 
@@ -110,7 +107,7 @@ func GetFileOffset(offsetAdd *int64) (offset int64,err error){
 	}
 
 	//持久化硬盘读取
-	oStr,err  := util.ReadFile(offsetPath)
+	oStr,err  := file.ReadFile(offsetPath)
 	if err != nil{
 		//一开始木有文件会抛出异常
 		log.Println("ReadFile Err：" + err.Error())

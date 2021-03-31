@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"hank.com/logagent/server/storage"
+	"github.com/friendlyhank/logagent/server/storage"
 )
 
 const (

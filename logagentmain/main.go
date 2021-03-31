@@ -1,9 +1,9 @@
 package logagentmain
 
 import (
-	"hank.com/logagent/input"
-	"hank.com/logagent/server/kafka"
-	"hank.com/logagent/server/storage"
+	"github.com/friendlyhank/logagent/input"
+	"github.com/friendlyhank/logagent/server/kafka"
+	"github.com/friendlyhank/logagent/server/storage"
 )
 
 func Main() {

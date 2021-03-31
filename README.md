@@ -29,6 +29,7 @@ http://www.hank.com/log.gif?log={"aa":"aa","bb":"bb"} <br/>
 
 未解决:
 文件读取的特殊字符问题
+offset不存在的问题
 
 
 

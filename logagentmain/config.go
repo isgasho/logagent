@@ -3,9 +3,9 @@ package logagentmain
 import (
 	"flag"
 
-	"hank.com/logagent/server/storage"
+	"github.com/friendlyhank/logagent/server/storage"
 
-	"hank.com/logagent/input"
+	"github.com/friendlyhank/logagent/input"
 )
 
 type config struct {

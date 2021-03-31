@@ -1,7 +1,7 @@
 package main
 
 import (
-	"hank.com/logagent/logagentmain"
+	"github.com/friendlyhank/logagent/logagentmain"
 )
 
 func main() {

@@ -10,7 +10,7 @@ import (
 	"github.com/Shopify/sarama"
 	"github.com/astaxie/beego"
 	"github.com/olivere/elastic/config"
-	"hank.com/logagent/server/esc"
+	"github.com/friendlyhank/logagent/server/esc"
 )
 
 type CommonLog struct {
@@ -47,7 +47,6 @@ func NewElasticMessage(indexName string,value []byte)(elasticMessage *ElasticMes
 	err = json.Unmarshal(value, e.CommonLog)
 	if err != nil {
 		log.Printf("commonLog Unmarshal： %v|Err|%v",string(value),err)
-		e.CommonLog = nil
 	}
 
 	//记录上传时间
